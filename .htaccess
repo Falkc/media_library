@@ -1,0 +1,23 @@
+RewriteEngine On
+RewriteRule ^$ index.php?p=home/index
+RewriteRule ^page(/(\d*))?$ index.php?p=home/index&page=$2
+RewriteRule ^login/?$ index.php?p=user/login
+RewriteRule ^register/?$ index.php?p=user/register
+RewriteRule ^logout/?$ index.php?p=user/logout
+RewriteRule ^game(/(.*))?$ index.php?p=game/game&game=$2
+RewriteRule ^categories/?$ index.php?p=category/categories
+RewriteRule ^category(/(.*))? index.php?p=category/category&name=$2
+RewriteRule ^addwishes(/(.*))?$ index.php?p=wishes/addwish&game_slug=$2
+RewriteRule ^deletewishesandredirect(/([^/]*))?(/(.*))?$ index.php?p=wishes/deletewishandredirect&game_slug=$2&redirect=$4
+RewriteRule ^showwishes/?$ index.php?p=wishes/showwishes
+RewriteRule ^admin/game/add/?$ index.php?p=admin/game/add
+RewriteRule ^admin/game/delete(/(\d*))?$ index.php?p=admin/game/delete&game_id=$2
+
+
+
+RewriteRule ^admin/showwishes(/(\d*))?$ index.php?p=admin/showwishes&pos=$2
+
+RewriteRule ^admin/attribution?$ index.php?p=admin/attribution
+# RewriteRule ^(.+)$ index.php?p=$1
+# ^ début expression régulière, $ fin , $1 récupère la première expression en parenthèse
+# /catégorie page de base, /catégorie/nomcatégorie page spécifique
