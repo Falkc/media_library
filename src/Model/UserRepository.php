@@ -13,7 +13,7 @@ class UserRepository
     {
 
         $statement = $this->connection->getConnection()->query(
-            "SELECT * FROM users WHERE admin=0 ORDER BY id ASC"
+            "SELECT * FROM users ORDER BY id DESC"
         );
         $users = [];
         while (($row = $statement->fetch())) {

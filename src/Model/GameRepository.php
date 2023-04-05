@@ -171,10 +171,17 @@ class GameRepository
         }
         return $gamequantity;
     }
+    public function getGameswishednb()
+    {
+        $statement = $this->connection->getConnection()->query(
+            "SELECT COUNT(DISTINCT(game_id)) AS nb FROM wishes"
+        );
+        return $statement->fetch()['nb'];
+    }
     public function getGameswished()
     {
         $statement = $this->connection->getConnection()->query(
-            "SELECT DISTINCT(id) AS id FROM games ORDER BY id ASC"
+            "SELECT DISTINCT(game_id) AS id FROM wishes ORDER BY id ASC"
         );
         $games = [];
         while ($row = $statement->fetch()) {
