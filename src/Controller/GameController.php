@@ -5,28 +5,32 @@ namespace App\Controller;
 use App\Model\GameRepository;
 use App\Lib\DatabaseConnection;
 use App\Model\CategoryRepository;
+use App\Model\InformationRepository;
 use App\Model\WishesRepository;
 
 class GameController
 {
     public function game()
     {
-        $categoryRepository = new CategoryRepository;
-        $wishRepository = new WishesRepository;
-        $gameRepository = new GameRepository;
-        $database = new DatabaseConnection;
+        $categoryRepository = new CategoryRepository();
+        $wishRepository = new WishesRepository();
+        $gameRepository = new GameRepository();
+        $informationRepository = new InformationRepository();
+        $database = new DatabaseConnection();
         $categoryRepository->connection = $database;
         $wishRepository->connection = $database;
         $gameRepository->connection = $database;
+        $informationRepository->connection = $database;
 
         if (empty($_GET['game'])) {
-            header("Location:".SITE);
+            header("Location:" . SITE);
             exit;
         }
 
         $game_slug = $_GET['game'];
         $game = $gameRepository->getGameBySlug($game_slug);
         $game->category = $categoryRepository->getGameCategoryById($game->id);
+        $phase = $informationRepository->getPhase();
 
         if (!isset($game)) {
             $errorMsg = "Aucun jeu trouvé";

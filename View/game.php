@@ -6,18 +6,17 @@
     echo "<h2>" . $errorMsg . "</h2>";
 } else { ?>
 
-    <img src="Images/abaque_bois.png" class=" card-img-top flex-shrink-0" alt="">
     <div class="container my-5">
         <div class="row">
             <div class="col-md-3">
-            <img src="<?= URL."Images/" . $game->image ?>" class=" card-img-top flex-shrink-0" alt="<?= "Images/" . $game->image ?>">
+                <img src="<?= URL . "Images/" . $game->image ?>" class=" card-img-top flex-shrink-0" alt="<?= "Images/" . $game->image ?>">
             </div>
             <div class="col-md-6">
                 <h1> <?= $game->name ?> </h1>
                 <p>
-                    <a href="<?=SITE."/category/".$game->category->slug ?>">
+                    <a href="<?= SITE . "/category/" . $game->category->slug ?>">
                         <span class="badge bg-primary mb-2">
-                            <?= $game->category->name ?>      
+                            <?= $game->category->name ?>
                         </span>
                     </a>
                 </p>
@@ -46,15 +45,20 @@
                     </div>
 
                 </div>
-            <?php } else if ($checkwish == 1) { ?>
-                <div class=" col-md-3 d-flex justify-content-center align-items-center">
-                    <a href='<?= SITE ?>/deletewishesandredirect/<?= $game->slug ?>/0'> <button type="button" class="btn btn-lg btn-primary">Supprimer de mes voeux</button></a>
-                </div>
-            <?php } else { ?>
-                <div class="col-md-3 d-flex justify-content-center align-items-center">
-                    <a href='<?= SITE ?>/addwishes/<?= $game->slug ?>'> <button type="button" class="btn btn-lg btn-primary">Ajouter à mes voeux</button></a>
-                </div>
-            <?php } ?>
+                <?php } else if ($checkwish == 1) {
+                if ($phase == 1) { ?>
+                    <div class=" col-md-3 d-flex justify-content-center align-items-center">
+                        <a href='<?= SITE ?>/deletewishesandredirect/<?= $game->slug ?>/0'> <button type="button" class="btn btn-lg btn-primary">Supprimer de mes voeux</button></a>
+                    </div>
+                <?php }
+            } else {
+                if ($phase == 1) { ?>
+                    <div class="col-md-3 d-flex justify-content-center align-items-center">
+                        <a href='<?= SITE ?>/addwishes/<?= $game->slug ?>'> <button type="button" class="btn btn-lg btn-primary">Ajouter à mes voeux</button></a>
+                    </div>
+            <?php }
+            }
+            ?>
         </div>
     </div>
 

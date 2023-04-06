@@ -181,7 +181,7 @@ class WishesRepository
         }
         return $gamesWished;
     }
-    public function getDistinctGamesFromWishes()
+    public function getDistinctGamesFromWishes(): array
     {
         $statement = $this->connection->getConnection()->query(
             'SELECT DISTINCT name FROM games WHERE id IN (SELECT DISTINCT game_id FROM wishes)'
