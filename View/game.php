@@ -28,8 +28,22 @@
                     <a href='<?= SITE ?>/login'> <button type="button" class="btn btn-lg btn-primary">Se connecter pour ajouter aux voeux</button></a>
                 </div>
             <?php } else if ($_SESSION['admin'] == 1) { ?>
-                <div class="col-md-3 d-flex justify-content-center align-items-center">
-                    <a href='<?= SITE ?>/admin/game/delete/<?= $game->id ?>'> <button type="button" class="btn btn-lg btn-primary " onclick="return confirm('Etes vous sûr de vouloir supprimer ce jeu ?')">Supprimer le jeu</button></a>
+                <div class="col-md-3 justify-content-center align-items-center">
+                    <div class="row m-3">
+                        <a href='<?= SITE ?>/admin/game/modify/<?= $game->id ?>'>
+                            <button type="button" class="btn btn-lg btn-primary">
+                                Modifier le jeu
+                            </button>
+                        </a>
+                    </div>
+                    <div class="row m-3">
+                        <a href='<?= SITE ?>/admin/game/delete/<?= $game->id ?>'>
+                            <button type="button" class="btn btn-lg btn-danger" onclick="return confirm('Etes vous sûr de vouloir supprimer ce jeu ?')">
+                                Supprimer le jeu
+                            </button>
+                        </a>
+                    </div>
+
                 </div>
                 <?php } else if ($checkwish == 1) {
                 if ($phase == 1) { ?>

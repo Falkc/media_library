@@ -22,18 +22,19 @@ class WishesController
 
         $game = $gameRepository->getGameBySlug($_GET['game_slug']);
         $wishRepository->addwish($_SESSION['id'], $game->id);
-        header("Location:" . SITE . "/game/" . $game->slug);
+        header("Location:".SITE."/game/" . $game->slug);
     }
     public function deletewishandredirect()
     {
         managePhase(1);
         $game = $this->deletewish($_GET['game_slug']);
         $redirect = $_GET['redirect'];
+        var_dump($redirect);
         if ($redirect == 0) {
-            header("Location:" . SITE . "/game/" . $game->slug);
+            header("Location:".SITE."/game/" . $game->slug);
         }
         if ($redirect == 1) {
-            header("Location:" . SITE . "/showwishes/");
+            header("Location:".SITE."/showwishes/");
         }
     }
     private function deletewish($game_slug)

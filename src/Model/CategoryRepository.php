@@ -48,7 +48,6 @@ class CategoryRepository
             $link = new LinkTable();
             $link->game_id = $row['game_id'];
             $link->category_id = $row['category_id'];
-
             $linktable[] = $link;
         }
         return $linktable;
