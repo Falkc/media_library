@@ -23,11 +23,10 @@ s.t. get_only_wish {i in 1..g, j in 1..njeux} : x[i,j] <= v[i,j];
 #s.t. un_seul_jeu_a_5 {i in 1..g} : sum {j in 1..njeux} (if x[i,j]==5 then 1 else 0) <=1; 
 
 
-#satisfy_everybody2 {i in 1..g}: sum {j in 1..njeux} x[i,j] >= 1;
-
-
-
-maximize f: sum {i in 1..g, j in 1..njeux} x[i,j]*v[i,j];
+s.t. c10 : x[1,4] == 1;
+s.t. c11 : x[1,7] == 1;
+s.t. c12 : x[1,15] == 1;
+maximize f: sum {i in 1..g, j in 1..njeux} (x[i,j]*v[i,j]);
 
 
 
