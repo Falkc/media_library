@@ -30,7 +30,7 @@
                     <?php  ?>
 
                     <li class="nav-item">
-                        <a class="nav-link" href=" http://www.association-galipette.org/site/">About</a>
+                        <a class="nav-link" href=" http://www.association-galipette.org/site/">Association Galipette</a>
                     </li>
                 </ul>
                 <?php if (isset($_SESSION['id'])) { ?>

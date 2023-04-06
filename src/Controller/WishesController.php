@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Model\GameRepository;
 use App\Lib\DatabaseConnection;
+use App\Model\CategoryRepository;
 use App\Model\WishesRepository;
 
 class WishesController
@@ -11,7 +12,7 @@ class WishesController
 
     public function addwish()
     {
-
+        managePhase(1);
         $wishRepository = new WishesRepository;
         $gameRepository = new GameRepository;
         $database = new DatabaseConnection;
@@ -25,6 +26,7 @@ class WishesController
     }
     public function deletewishandredirect()
     {
+        managePhase(1);
         $game = $this->deletewish($_GET['game_slug']);
         $redirect = $_GET['redirect'];
         if ($redirect == 0) {
@@ -36,7 +38,7 @@ class WishesController
     }
     private function deletewish($game_slug)
     {
-
+        managePhase(1);
         $wishRepository = new WishesRepository;
         $gameRepository = new GameRepository;
         $database = new DatabaseConnection;
@@ -49,13 +51,19 @@ class WishesController
     }
     public function showwishes()
     {
+        managePhase(1);
         $wishRepository = new WishesRepository;
         $gameRepository = new GameRepository;
+        $categoryRepository = new CategoryRepository;
         $database = new DatabaseConnection;
         $wishRepository->connection = $database;
         $gameRepository->connection = $database;
+        $categoryRepository->connection = $database;
 
         $games = $wishRepository->getwishes();
+        foreach ($games as $game) {
+            $game->category = $categoryRepository->getGameCategoryById($game->id);
+        }
         if (empty($games)) {
             $errorMsg = 'Vous n\'avez pas encore séléctionné de voeux !';
         }

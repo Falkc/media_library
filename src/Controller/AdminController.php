@@ -17,56 +17,56 @@ class AdminController
     {
         if ($_SESSION['admin'] != 1) {
             header("Location:" . SITE);
-        }
+        } else {
+            if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                $gameRepository = new GameRepository();
+                $categoryRepository = new CategoryRepository;
+                $database = new DatabaseConnection();
+                $gameRepository->connection = $database;
+                $categoryRepository->connection = $database;
 
-            $gameRepository = new GameRepository();
-            $categoryRepository = new CategoryRepository;
-            $database = new DatabaseConnection();
-            $gameRepository->connection = $database;
-            $categoryRepository->connection = $database;
+                if (empty($_POST['name']) || empty($_POST['category']) || empty($_POST['nb_copies'])) {
 
-            if (empty($_POST['name']) || empty($_POST['category']) || empty($_POST['nb_copies'])) {
-
-                $errorMsg = "Veuillez remplir tout les champs";
-            } else {
-
-                $errorMsg = $this->checkNewGameInfo($_POST['name'], $_POST['nb_copies']);
-
-                if (!empty($errorMsg)) {;
+                    $errorMsg = "Veuillez remplir tout les champs";
                 } else {
 
-                    if (!$gameRepository->checkNewGame($_POST['name'])) {
+                    $errorMsg = $this->checkNewGameInfo($_POST['name'], $_POST['nb_copies']);
 
-                        $errorMsg = "Nom de jeu déjà existant";
+                    if (!empty($errorMsg)) {;
                     } else {
-                        $slug = slugify($_POST['name']);
-                        $gameRepository->addGame(
-                            $_POST['name'],
-                            $slug,
-                            $_POST['description'],
-                            $_POST['nb_copies'],
-                            $_FILES['image']['name']
-                        );
-                        $uploadfile = 'Images/' . basename($_FILES['image']['name']);
-                        move_uploaded_file($_FILES['image']['tmp_name'], $uploadfile);
 
-                        $category = $categoryRepository->checkcategory($_POST['category']);
-                        $game = $gameRepository->getGameBySlug($slug);
-                        $categoryRepository->addcategorytogame($category->id, $game->id);
-                        $successMsg = "Le jeu a bien été ajouté";
+                        if (!$gameRepository->checkNewGame($_POST['name'])) {
+
+                            $errorMsg = "Nom de jeu déjà existant";
+                        } else {
+                            $slug = slugify($_POST['name']);
+                            $gameRepository->addGame(
+                                $_POST['name'],
+                                $slug,
+                                $_POST['description'],
+                                $_POST['nb_copies'],
+                                $_FILES['image']['name']
+                            );
+                            $uploadfile = 'Images/' . basename($_FILES['image']['name']);
+                            move_uploaded_file($_FILES['image']['tmp_name'], $uploadfile);
+
+                            $category = $categoryRepository->checkcategory($_POST['category']);
+                            $game = $gameRepository->getGameBySlug($slug);
+                            $categoryRepository->addcategorytogame($category->id, $game->id);
+                            $successMsg = "Le jeu a bien été ajouté";
+                        }
                     }
                 }
+            } else {
+                $categoryRepository = new CategoryRepository;
+                $database = new DatabaseConnection();
+                $categoryRepository->connection = $database;
             }
-        } else {
-            $categoryRepository = new CategoryRepository;
-            $database = new DatabaseConnection();
-            $categoryRepository->connection = $database;
-        }
-        $categories = $categoryRepository->getCategories();
+            $categories = $categoryRepository->getCategories();
 
-        require('View/admin/addGame.php');
+            require('View/admin/addGame.php');
+        }
     }
     private function checkNewGameInfo(string $name, string $nb_copies)
     {
@@ -96,6 +96,7 @@ class AdminController
         if ($_SESSION['admin'] != 1) {
             header("Location:" .  SITE);
         } else {
+            managePhase(1);
 
             $gameRepository = new GameRepository();
             $wishesRepository = new WishesRepository();
@@ -157,6 +158,7 @@ class AdminController
         if ($_SESSION['admin'] != 1) {
             header("Location: " . SITE);
         } else {
+            managePhase(1);
             $gameRepository = new GameRepository();
             $wishesRepository = new WishesRepository;
             $database = new DatabaseConnection();
