@@ -40,6 +40,11 @@ class AdminController
 
                             $errorMsg = "Nom de jeu déjà existant";
                         } else {
+                        $uploadfile = 'Images/' . basename($_FILES['image']['name']);
+                        $isUploadedFile=move_uploaded_file($_FILES['image']['tmp_name'], $uploadfile);
+                        if (!$isUploadedFile) {
+                            $errorMsg = "L'image n'a pas pu être téléchargée";
+                        } else {
                             $slug = slugify($_POST['name']);
                             $gameRepository->addGame(
                                 $_POST['name'],
@@ -48,8 +53,6 @@ class AdminController
                                 $_POST['nb_copies'],
                                 $_FILES['image']['name']
                             );
-                            $uploadfile = 'Images/' . basename($_FILES['image']['name']);
-                            move_uploaded_file($_FILES['image']['tmp_name'], $uploadfile);
 
                             $category = $categoryRepository->checkcategory($_POST['category']);
                             $game = $gameRepository->getGameBySlug($slug);
