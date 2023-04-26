@@ -24,7 +24,6 @@
                     <th scope="row"><?php echo ucfirst($information['lastname']) ?></th>
                     <td><?php echo ucfirst($information['firstname']) ?></td>
                     <td><?php
-                        //var_dump($information['gamename']);
                         $nbgame = count($information['gamename']);
                         foreach ($information['gamename'] as $i => $game_name) {
                             echo ucfirst($game_name) ?>
@@ -55,10 +54,10 @@
                 <div class="form-group my-3">
                     <label for="descrption">Membres</label>
                     <select class="form-select form-select-sm" aria-label=".form-select-sm example" name="member">
-                        <option selected><?php echo ucfirst($information['lastname']) . ' ' . ucfirst($information['firstname']); ?></option>
-                        <?php foreach ($informations as $i => $information) {
+                        <option selected><?php echo ucfirst($allUsers[0]->last_name) . ' ' . ucfirst($allUsers[0]->first_name); ?></option>
+                        <?php foreach ($allUsers as $i => $user) {
                             if ($i != 0) { ?>
-                                <option><?php echo ucfirst($information['lastname']) . ' ' . ucfirst($information['firstname']); ?></option>
+                                <option><?php echo ucfirst($user->last_name) . ' ' . ucfirst($user->first_name); ?></option>
                         <?php }
                         } ?>
                     </select>
@@ -69,10 +68,10 @@
                 <div class="form-group my-3">
                     <label for="descrption">Jeux</label>
                     <select class="form-select form-select-sm" aria-label=".form-select-sm example" name="game">
-                        <option selected><?php echo $game_names[0]; ?></option>
-                        <?php foreach ($game_names as $i => $game_name) {
+                        <option selected><?php echo $allGames[0]->name; ?></option>
+                        <?php foreach ($allGames as $i => $game) {
                             if ($i != 0) { ?>
-                                <option><?php echo $game_name; ?></option>
+                                <option><?php echo $game->name; ?></option>
                         <?php }
                         } ?>
                     </select>

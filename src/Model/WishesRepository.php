@@ -85,24 +85,29 @@ class WishesRepository
     }
 
 
-    public function getnbuserforadmin(): int //nombre d'utilisateurs qui ont fait un voeux
+    public function getNbUser(): int //nombre d'utilisateurs qui ont fait un voeux
     {
         $statement = $this->connection->getConnection()->query(
-            'SELECT COUNT(DISTINCT user_id) AS nb FROM wishes'
+            'SELECT COUNT(DISTINCT id) AS nb FROM users WHERE admin=0'
         );
         return $statement->fetch()['nb'];
     }
 
-    public function getidtable()
+    public function getidtable(): array
     {
         $statement = $this->connection->getConnection()->query(
-            'SELECT user_id,GROUP_CONCAT(game_id SEPARATOR\',\' ) FROM wishes  GROUP BY user_id'
+            'SELECT u.id,GROUP_CONCAT(w.game_id SEPARATOR\',\' ) FROM users u LEFT JOIN wishes w ON u.id=w.user_id WHERE u.admin=0 GROUP BY u.id'   //SELECT user_id,GROUP_CONCAT(game_id SEPARATOR\',\' ) FROM wishes  GROUP BY user_id
         );
         $wishes = [];
         while (($row = $statement->fetch())) {
             $wish = new Wish();
-            $wish->user_id = $row['user_id'];
-            $wish->game_id = $row['GROUP_CONCAT(game_id SEPARATOR\',\' )'];
+            $wish->user_id = $row['id'];
+            if ($row['GROUP_CONCAT(w.game_id SEPARATOR\',\' )'] == NULL) {
+                $wish->game_id = 'erreur';
+            } else {
+                $wish->game_id = $row['GROUP_CONCAT(w.game_id SEPARATOR\',\' )'];
+            }
+
 
             $wishes[] = $wish;
         }
@@ -111,7 +116,7 @@ class WishesRepository
 
         return $gamesWished;
     }
-    public function fillattributiontable(int $user_id, int $game_id)
+    public function fillAttributionTable(int $user_id, int $game_id)
     {
         $insert = $this->connection->getConnection()->prepare(
             "INSERT INTO attribution (game_id, user_id) VALUES(:game_id, :user_id)"
@@ -142,7 +147,7 @@ class WishesRepository
             'TRUNCATE TABLE attribution'
         );
     }
-    private function removeConcatenation(array $wishes, string $id)
+    private function removeConcatenation(array $wishes, string $id): array
     {
         $gamesWished = [];
         foreach ($wishes as $wish) {
@@ -152,10 +157,8 @@ class WishesRepository
                 $idTable->game_id[0] = '';
                 $j = 0;
                 for ($i = 0; $i < strlen($wish->game_id); $i++) {
-                    // echo '[$wish=' . $wish->game_id[$i] . ']' . strlen($wish->game_id) . '<br>';
-                    if ($wish->game_id[$i] != ',' && $wish->game_id[$i] != '') {
+                    if ($wish->game_id[$i] != ',' && $wish->game_id[$i] != '' && is_numeric($wish->game_id[$i])) {
                         $idTable->game_id[$j] .= $wish->game_id[$i];
-                        // echo '[i=' . $i . ']  [ id_game=' . $idtable->game_id[$j] . '] [j=' . $j . ']'  . '<br>';
                     } else {
                         $j++;
                         $idTable->game_id[$j] = '';
@@ -167,10 +170,8 @@ class WishesRepository
                 $nameTable['gamename'][0] = '';
                 $j = 0;
                 for ($i = 0; $i < strlen($wish->game_name); $i++) {
-                    // echo '[$wish=' . $wish->game_id[$i] . ']' . strlen($wish->game_id) . '<br>';
                     if ($wish->game_name[$i] != ',' && $wish->game_name[$i] != '') {
                         $nameTable['gamename'][$j] .= $wish->game_name[$i];
-                        // echo '[i=' . $i . ']  [ id_game=' . $idtable->game_id[$j] . '] [j=' . $j . ']'  . '<br>';
                     } else {
                         $j++;
                         $nameTable['gamename'][$j] = '';
@@ -181,7 +182,7 @@ class WishesRepository
         }
         return $gamesWished;
     }
-    public function getDistinctGamesFromWishes()
+    public function getDistinctGamesFromWishes(): array
     {
         $statement = $this->connection->getConnection()->query(
             'SELECT DISTINCT name FROM games WHERE id IN (SELECT DISTINCT game_id FROM wishes)'
@@ -214,8 +215,33 @@ class WishesRepository
         if (strval($nb_copies) <= $count) {
             return 2;
         } else if (strval($nb_copies) > $count) {
-            //var_dump(strval($nb_copies), $count, strval($nb_copies) > $count);
             return 0;
         }
+    }
+    public function getGamesAndUsersNamesList(): array
+    {
+        $statement1 = $this->connection->getConnection()->query(
+            "SELECT name FROM games ORDER BY id ASC"
+        );
+        $statement2 = $this->connection->getConnection()->query(
+            "SELECT first_name,last_name FROM users WHERE admin=0 ORDER BY id ASC"
+        );
+        $game_names = [];
+        while ($row = $statement1->fetch()) {
+
+            $game_name = $row['name'];
+            $game_names[] = $game_name;
+        }
+
+        $user_names = [];
+        while ($row = $statement2->fetch()) {
+            $first_name = $row['first_name'];
+            $last_name = $row['last_name'];
+
+            $user_names[] = ucfirst($last_name) . ' ' . ucfirst($first_name);
+        }
+
+        $gamesAndUsersNamesList = ['user_names' => $user_names, 'game_names' => $game_names];
+        return $gamesAndUsersNamesList;
     }
 }

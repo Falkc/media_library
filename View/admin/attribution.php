@@ -27,8 +27,9 @@
             <?php } ?>
             </tbody>
     </table>
-    <?php //echo $cpt . ', ' . ucfirst($information->lastname) . ', ' . ucfirst($information->firstname) . ', ' . ucfirst($information->game_name); 
-    ?>
+    <br>
+    <a href='<?= SITE ?>/admin/showwishes/'> <button type="boutton" class="btn btn-lg btn-danger">Annuler l'attribution</button></a>
+    <a href='<?= SITE ?>/admin/showwishes/'> <button type="boutton" class="btn btn-lg btn-primary">Accepter l'attribution</button></a>
 
 <?php }
 $content = ob_get_clean(); ?>
