@@ -43,7 +43,6 @@
                             </button>
                         </a>
                     </div>
-
                 </div>
                 <?php } else if ($checkwish == 1) {
                 if ($phase == 1) { ?>

@@ -6,6 +6,8 @@ use App\Model\GameRepository;
 use App\Lib\DatabaseConnection;
 use App\Model\CategoryRepository;
 use App\Model\Entity\Idtable;
+use App\Model\Entity\Wish;
+use App\Model\UserRepository;
 use App\Model\WishesRepository;
 use DateTime;
 
@@ -14,18 +16,9 @@ class AdminController
     public function addGame()
     {
         if ($_SESSION['admin'] != 1) {
-            header("Location:".SITE);
-        }
-
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-
-            $gameRepository = new GameRepository();
-            $categoryRepository = new CategoryRepository();
-            $database = new DatabaseConnection();
-            $gameRepository->connection = $database;
-            $categoryRepository->connection = $database;
-
-            if (empty($_POST['name']) || empty($_POST['category']) || empty($_POST['nb_copies']) || empty($_FILES['image']['name'])) {
+            header("Location:" . SITE);
+        } else {
+            if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                 $gameRepository = new GameRepository();
                 $categoryRepository = new CategoryRepository;
@@ -53,7 +46,7 @@ class AdminController
                             $errorMsg = "L'image n'a pas pu être téléchargée";
                         } else {
                             $slug = slugify($_POST['name']);
-                                $gameRepository->addGame(
+                            $gameRepository->addGame(
                                 $_POST['name'],
                                 $slug,
                                 $_POST['description'],
@@ -73,12 +66,7 @@ class AdminController
                 $database = new DatabaseConnection();
                 $categoryRepository->connection = $database;
             }
-        }else{
-            $categoryRepository = new CategoryRepository();
-            $database = new DatabaseConnection();
-            $categoryRepository->connection = $database;
-        }
-        $categories = $categoryRepository->getCategories();
+            $categories = $categoryRepository->getCategories();
 
             require('View/admin/addGame.php');
         }
@@ -96,32 +84,36 @@ class AdminController
     public function deleteGame()
     {
         if ($_SESSION['admin'] != 1) {
-            header("Location:". SITE);
+            header("Location: /media_library ");
         } else {
             $gameRepository = new GameRepository();
             $database = new DatabaseConnection();
             $gameRepository->connection = $database;
 
             $game = $gameRepository->deleteGame($_GET['game_id']);
-            //var_dump($_GET['game_id']);
-            header("Location:". SITE);
+            header("Location: /media_library ");
         }
     }
     public function showwishes()
     {
         if ($_SESSION['admin'] != 1) {
-            header("Location:". SITE);
+            header("Location:" .  SITE);
         } else {
             managePhase(1);
 
             $gameRepository = new GameRepository();
             $wishesRepository = new WishesRepository();
+            $userRepositary = new UserRepository();
             $database = new DatabaseConnection();
             $gameRepository->connection = $database;
             $wishesRepository->connection = $database;
+            $userRepositary->connection = $database;
 
             $informations = $wishesRepository->getwishesforadmin();
             $game_names = $wishesRepository->getDistinctGamesFromWishes();
+
+            $allUsers = $userRepositary->getUsers();
+            $allGames = $gameRepository->getGames();
             if (empty($informations)) {
                 $errorMsg = 'Aucun usager n\'a émit de voeux';
             }
@@ -138,7 +130,7 @@ class AdminController
                     $_SESSION['constraintTable'][] = $constraint;
                     $_SESSION['nbConstraint']++;
                 } else if ($error == 1) {
-                    $_SESSION['errorMsg2'] = 'La contrainte que vous avez essayer d\'ajouter existe déjà ! ';
+                    $_SESSION['errorMsg2'] = 'La contrainte que vous avez essayé d\'ajouter existe déjà ! ';
                     $_SESSION['displayError'] = 1;
                 } else if ($error == 2) {
                     $_SESSION['errorMsg2'] = 'Vous ne pouvez pas attribuer un nombre d\'exemplaires d\'un jeu excédent le nombre d\'exemplaires en stock !';
@@ -167,22 +159,22 @@ class AdminController
     public function attribution()
     {
         if ($_SESSION['admin'] != 1) {
-            header("Location:". SITE);
+            header("Location: " . SITE);
         } else {
             managePhase(1);
             $gameRepository = new GameRepository();
-            $wishesRepository = new WishesRepository();
+            $wishesRepository = new WishesRepository;
             $database = new DatabaseConnection();
             $gameRepository->connection = $database;
             $wishesRepository->connection = $database;
 
             //nb jeux
 
-            $gamenb = $gameRepository->getGameswishednb(); // équivaut à njeux dans le programme de Florian
+            $gamenb = $gameRepository->getGamesNb(); // équivaut à njeux dans le programme de Florian
 
-            //nb user qui on fait des voeux
+            //nb user non admin
 
-            $usernb = $wishesRepository->getnbuserforadmin(); //équivaut à g dans le programme de Florian
+            $usernb = $wishesRepository->getNbUser(); //équivaut à g dans le programme de Florian
 
             //tableau avec le nombre d'exemplaires de chaque jeux
 
@@ -190,14 +182,14 @@ class AdminController
 
             //tableau dont chaque élément sont des idtable donc composés d'un user_id et d'un tableau de game_id
 
-            $gameswished = $wishesRepository->getidtable(); // servira aussi pour récupérer le résultat
+            $gameswishedAndUsers = $wishesRepository->getidtable(); // servira aussi pour récupérer le résultat
 
             // récupérer les id de tous les jeux, ensuite pour chaque id on check s'il est dans games[user], s'il y est on met un 1 sinon un 0
 
             $games_id = $gameRepository->getGameswished(); // tableau avec game_id wished order by asc
             $wish = [];
             $i = 0;
-            foreach ($gameswished as $gamewished) { // on parcours tous les utilisateurs
+            foreach ($gameswishedAndUsers as $gamewished) { // on parcours tous les utilisateurs
                 foreach ($games_id as $game_id) { // on parcours tous les jeux
                     foreach ($gamewished->game_id as $id) { // on parcours tous les jeux demandés
                         if ($id == $game_id) {
@@ -209,12 +201,28 @@ class AdminController
                     $i++;
                 }
             }
-
             for ($i = $gamenb; $i > 0; $i--) {
                 $gamequantity[$i] = $gamequantity[$i - 1];
             }
-
-
+            // gestion des contraintes
+            $constraints = [];
+            if (isset($_SESSION['constraintTable'])) {
+                $gamesAndUsersNamesList = $wishesRepository->getGamesAndUsersNamesList();
+                foreach ($_SESSION['constraintTable'] as $i => $constraintTable) {
+                    $constraint = new Wish();
+                    for ($j = 0; $j < $usernb; $j++) {
+                        if ($constraintTable['member'] == $gamesAndUsersNamesList['user_names'][$j]) {
+                            $constraint->user_id = $j + 1;
+                        }
+                    }
+                    for ($m = 0; $m < $gamenb; $m++) {
+                        if ($constraintTable['game'] == $gamesAndUsersNamesList['game_names'][$m]) {
+                            $constraint->game_id = $m + 1;
+                        }
+                    }
+                    $constraints[] = $constraint;
+                }
+            }
             require('script_solver.php');
             for ($i = 1; $i <= $njeux * $g; $i++) {
                 $attribution[$i - 1] = $attribution[$i];
@@ -223,7 +231,7 @@ class AdminController
             $wishesRepository->deletePastAttribution();
             for ($i = 0; $i < $njeux * $g; $i++) {
                 if ($attribution[$i] == 1) {
-                    $wishesRepository->fillattributiontable($gameswished[floor($i / $gamenb)]->user_id, $games_id[$i % $gamenb]);
+                    $wishesRepository->fillAttributionTable($gameswishedAndUsers[floor($i / $gamenb)]->user_id, $games_id[$i % $gamenb]);
                 }
             }
             $informations = $wishesRepository->getattributionforadmin();
