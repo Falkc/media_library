@@ -45,21 +45,25 @@ class AdminController
 
                             $errorMsg = "Nom de jeu déjà existant";
                         } else {
-                            $slug = slugify($_POST['name']);
-                            $gameRepository->addGame(
-                                $_POST['name'],
-                                $slug,
-                                $_POST['description'],
-                                $_POST['nb_copies'],
-                                $_FILES['image']['name']
-                            );
                             $uploadfile = 'Images/' . basename($_FILES['image']['name']);
-                            move_uploaded_file($_FILES['image']['tmp_name'], $uploadfile);
+                            $isUploadedFile=move_uploaded_file($_FILES['image']['tmp_name'], $uploadfile);
+                            if (!$isUploadedFile) {
+                                $errorMsg = "L'image n'a pas pu être téléchargée";
+                            } else {
+                                $slug = slugify($_POST['name']);
+                                $gameRepository->addGame(
+                                    $_POST['name'],
+                                    $slug,
+                                    $_POST['description'],
+                                    $_POST['nb_copies'],
+                                    $_FILES['image']['name']
+                                );
 
-                            $category = $categoryRepository->checkcategory($_POST['category']);
-                            $game = $gameRepository->getGameBySlug($slug);
-                            $categoryRepository->addcategorytogame($category->id, $game->id);
-                            $successMsg = "Le jeu a bien été ajouté";
+                                $category = $categoryRepository->checkcategory($_POST['category']);
+                                $game = $gameRepository->getGameBySlug($slug);
+                                $categoryRepository->addcategorytogame($category->id, $game->id);
+                                $successMsg = "Le jeu a bien été ajouté";
+                            }
                         }
                     }
                 }
