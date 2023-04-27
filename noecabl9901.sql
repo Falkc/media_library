@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : localhost
--- Généré le : mer. 26 avr. 2023 à 13:39
+-- Généré le : jeu. 27 avr. 2023 à 11:53
 -- Version du serveur : 10.5.18-MariaDB-0+deb11u1
 -- Version de PHP : 7.4.33
 
@@ -38,23 +38,8 @@ CREATE TABLE `attribution` (
 --
 
 INSERT INTO `attribution` (`id`, `game_id`, `user_id`) VALUES
-(1, 37, 2),
-(2, 39, 2),
-(3, 40, 2),
-(4, 45, 2),
-(5, 39, 3),
-(6, 41, 3),
-(7, 95, 3),
-(8, 38, 4),
-(9, 45, 4),
-(10, 38, 5),
-(11, 38, 6),
-(12, 40, 7),
-(13, 42, 7),
-(14, 40, 8),
-(15, 45, 8),
-(16, 43, 11),
-(17, 42, 12);
+(1, 95, 3),
+(2, 42, 12);
 
 -- --------------------------------------------------------
 
@@ -201,16 +186,17 @@ INSERT INTO `games` (`id`, `name`, `slug`, `description`, `image`, `nb_copies`) 
 
 CREATE TABLE `information` (
   `id` int(11) NOT NULL,
-  `deadline` datetime NOT NULL,
-  `phase` int(11) NOT NULL
+  `dead_line` datetime NOT NULL,
+  `phase` int(11) NOT NULL,
+  `attribution` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Déchargement des données de la table `information`
 --
 
-INSERT INTO `information` (`id`, `deadline`, `phase`) VALUES
-(1, '2023-04-06 11:11:14', 1);
+INSERT INTO `information` (`id`, `dead_line`, `phase`, `attribution`) VALUES
+(1, '2023-04-28 00:00:00', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -345,7 +331,7 @@ ALTER TABLE `wishes`
 -- AUTO_INCREMENT pour la table `attribution`
 --
 ALTER TABLE `attribution`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT pour la table `category`
@@ -357,7 +343,7 @@ ALTER TABLE `category`
 -- AUTO_INCREMENT pour la table `games`
 --
 ALTER TABLE `games`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=117;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=119;
 
 --
 -- AUTO_INCREMENT pour la table `information`
