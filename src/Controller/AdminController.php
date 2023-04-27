@@ -2,14 +2,16 @@
 
 namespace App\Controller;
 
-use App\Model\GameRepository;
-use App\Lib\DatabaseConnection;
-use App\Model\CategoryRepository;
-use App\Model\Entity\Idtable;
-use App\Model\Entity\Wish;
-use App\Model\UserRepository;
-use App\Model\WishesRepository;
 use DateTime;
+use DateTimeZone;
+use App\Model\Entity\Wish;
+use App\Model\Entity\Idtable;
+use App\Model\GameRepository;
+use App\Model\UserRepository;
+use App\Lib\DatabaseConnection;
+use App\Model\WishesRepository;
+use App\Model\CategoryRepository;
+use App\Model\InformationRepository;
 
 class AdminController
 {
@@ -19,12 +21,15 @@ class AdminController
             header("Location:" . SITE);
         } else {
             if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-
+                $informationRepository = new InformationRepository();
                 $gameRepository = new GameRepository();
                 $categoryRepository = new CategoryRepository;
                 $database = new DatabaseConnection();
                 $gameRepository->connection = $database;
                 $categoryRepository->connection = $database;
+                $informationRepository->connection = $database;
+
+                $phase = $informationRepository->getPhase();
 
                 if (empty($_POST['name']) || empty($_POST['category']) || empty($_POST['nb_copies'])) {
 
@@ -64,8 +69,11 @@ class AdminController
                 }
             } else {
                 $categoryRepository = new CategoryRepository;
+                $informationRepository = new InformationRepository();
                 $database = new DatabaseConnection();
+                $informationRepository->connection = $database;
                 $categoryRepository->connection = $database;
+                $phase = $informationRepository->getPhase();
             }
             $categories = $categoryRepository->getCategories();
 
@@ -100,7 +108,7 @@ class AdminController
         if ($_SESSION['admin'] != 1) {
             header("Location:" .  SITE);
         } else {
-            managePhase(1);
+            $phase = managePhase(1);
 
             $gameRepository = new GameRepository();
             $wishesRepository = new WishesRepository();
@@ -162,7 +170,7 @@ class AdminController
         if ($_SESSION['admin'] != 1) {
             header("Location: " . SITE);
         } else {
-            managePhase(1);
+            $phase = managePhase(1);
             $gameRepository = new GameRepository();
             $wishesRepository = new WishesRepository;
             $database = new DatabaseConnection();
@@ -238,6 +246,62 @@ class AdminController
             $informations = $wishesRepository->getattributionforadmin();
 
             require('View/admin/attribution.php');
+        }
+    }
+    public function cancelAttribution()
+    {
+        if ($_SESSION['admin'] != 1) {
+            header("Location: " . SITE);
+        } else {
+            $phase =  managePhase(1);
+            $informationRepository = new InformationRepository();
+            $database = new DatabaseConnection();
+            $informationRepository->connection = $database;
+
+            $informationRepository->modifyAttribution(0);
+            header('Location:' . SITE . '/admin/showwishes/');
+        }
+    }
+    public function acceptAttribution()
+    {
+        if ($_SESSION['admin'] != 1) {
+            header("Location: " . SITE);
+        } else {
+            $phase = managePhase(1);
+            $informationRepository = new InformationRepository();
+            $database = new DatabaseConnection();
+            $informationRepository->connection = $database;
+
+            $informationRepository->modifyPhase(2);
+            $informationRepository->modifyAttribution(1);
+
+            header('Location:' . SITE);
+        }
+    }
+    public function passToPhase1()
+    {
+        if ($_SESSION['admin'] != 1) {
+            header("Location: " . SITE);
+        } else {
+            $phase = managePhase(2);
+            $now = new DateTime('now');
+            if (isset($_POST['date'])) {
+                $informationRepository = new InformationRepository();
+                $database = new DatabaseConnection();
+                $informationRepository->connection = $database;
+
+                $date = new DateTime($_POST['date']);
+                if ($date > $now && $date->format('Y-m-d') != $now->format('Y-m-d')) {
+                    $informationRepository->modifyDate($date);
+                    $informationRepository->modifyPhase(1);
+                    $successMsg = 'Vous venez de passer à la phase de voeux.';
+                } else {
+                    $errorMsg = 'Vous devez sélectionner une date correcte.';
+                }
+            } else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                $errorMsg = 'Vous devez sélectionner une date correcte.';
+            }
+            require('view/admin/passToPhase1.php');
         }
     }
 }

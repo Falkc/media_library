@@ -30,4 +30,5 @@ function managePhase($phase)
     if ($realPhase != $phase) {
         header('Location:' . URL);
     }
+    return $realPhase;
 }

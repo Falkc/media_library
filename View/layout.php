@@ -10,40 +10,71 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="<?= SITE ?>">Médiathèque</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarColor01">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?= SITE ?>/categories">Catégories</a>
-                    </li>
-                    <?php if (isset($_SESSION['admin']) and $_SESSION['admin'] == 1) { ?>
+    <?php if ($phase == 1) { ?>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="<?= SITE ?>">Médiathèque</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarColor01">
+                    <ul class="navbar-nav me-auto">
                         <li class="nav-item">
-                            <a class="nav-link" href="<?= SITE ?>/admin/game/add/">Ajouter un jeu</a>
+                            <a class="nav-link" href="<?= SITE ?>/categories">Catégories</a>
                         </li>
-                    <?php } ?>
-                    <?php if (isset($_SESSION['id']) and $_SESSION['admin'] != 1) { ?>
+                        <?php if (isset($_SESSION['id']) and $_SESSION['admin'] != 1) { ?>
+                            <li class="nav-item">
+                                <a class="nav-link" href="<?= SITE ?>/showwishes">Mes voeux</a>
+                            </li>
+                        <?php } ?>
                         <li class="nav-item">
-                            <a class="nav-link" href="<?= SITE ?>/showwishes">Mes voeux</a>
+                            <a class="nav-link" href=" http://www.association-galipette.org/site/" target="_blank">Association Galipette</a>
                         </li>
+                    </ul>
+                    <?php if (isset($_SESSION['id'])) { ?>
+                        <a href="<?= SITE ?>/logout"><button class="btn btn-secondary my-2 my-sm-0">Se déconnecter</button></a>
+                    <?php } else { ?>
+                        <a href="<?= SITE ?>/register"><button class="btn btn-secondary my-2 my-sm-0 mx-3">S'inscrire</button></a>
+                        <a href="<?= SITE ?>/login"><button class="btn btn-secondary my-2 my-sm-0">Se connecter</button></a>
                     <?php } ?>
-                    <li class="nav-item">
-                        <a class="nav-link" href=" http://www.association-galipette.org/site/" target="_blank">Association Galipette</a>
-                    </li>
-                </ul>
-                <?php if (isset($_SESSION['id'])) { ?>
-                    <a href="<?= SITE ?>/logout"><button class="btn btn-secondary my-2 my-sm-0">Se déconnecter</button></a>
-                <?php } else { ?>
-                    <a href="<?= SITE ?>/register"><button class="btn btn-secondary my-2 my-sm-0 mx-3">S'inscrire</button></a>
-                    <a href="<?= SITE ?>/login"><button class="btn btn-secondary my-2 my-sm-0">Se connecter</button></a>
-                <?php } ?>
+                </div>
             </div>
-        </div>
-    </nav>
+        </nav>
+    <?php } else if ($phase == 2) { ?>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="<?= SITE ?>">Médiathèque</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarColor01">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?= SITE ?>/categories">Catégories</a>
+                        </li>
+
+                        <?php if (isset($_SESSION['id']) and $_SESSION['admin'] != 1) { ?>
+                            <li class="nav-item">
+                                <a class="nav-link" href="<?= SITE ?>/showwishes">Mes jeux</a>
+                            </li>
+                        <?php } ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href=" http://www.association-galipette.org/site/" target="_blank">Association Galipette</a>
+                        </li>
+                    </ul>
+                    <?php if (isset($_SESSION['id'])) { ?>
+                        <a href="<?= SITE ?>/logout"><button class="btn btn-secondary my-2 my-sm-0">Se déconnecter</button></a>
+                    <?php } else { ?>
+                        <a href="<?= SITE ?>/login"><button class="btn btn-secondary my-2 my-sm-0">Se connecter</button></a>
+                    <?php } ?>
+                </div>
+            </div>
+        </nav>
+
+
+
+
+    <?php } ?>
     <div class="container">
         <?= $content ?>
     </div>

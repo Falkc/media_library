@@ -6,6 +6,7 @@ use App\Lib\DatabaseConnection;
 use App\Model\CategoryRepository;
 use App\Model\Entity\Category;
 use App\Model\GameRepository;
+use App\Model\InformationRepository;
 
 class CategoryController
 {
@@ -13,10 +14,14 @@ class CategoryController
     {
         //déclaration des classes et connexion
         $categoryRepository = new CategoryRepository;
+        $informationRepository = new InformationRepository();
         $gameRepository = new GameRepository;
         $database = new DatabaseConnection;
         $categoryRepository->connection = $database;
         $gameRepository->connection = $database;
+        $informationRepository->connection = $database;
+
+        $phase = $informationRepository->getPhase();
 
         // calcul du nombre de page de catégorie
         $nbCategoriesByPage = 4;
@@ -28,7 +33,7 @@ class CategoryController
         $games = $gameRepository->getGames();
         $linktable = $categoryRepository->getLinkTable();
 
-        for($i=0; $i<count($games); $i++){
+        for ($i = 0; $i < count($games); $i++) {
             $games[$i]->category = $categoryRepository->getGameCategoryById($games[$i]->id);
         }
 
@@ -42,10 +47,15 @@ class CategoryController
         $database = new DatabaseConnection;
         $categoryRepository->connection = $database;
         $gameRepository->connection = $database;
+        $informationRepository = new InformationRepository();
+        $informationRepository->connection = $database;
+
+        $phase = $informationRepository->getPhase();
+
 
         // test du get
         if (empty($_GET['name'])) {
-            header("Location:".SITE);
+            header("Location:" . SITE);
             exit;
         }
         $category_name = $_GET['name'];
@@ -57,7 +67,7 @@ class CategoryController
         $linktable = $categoryRepository->getLinkTable();
         $games = $gameRepository->getGamesByCategory($category, $linktable);
 
-        for($i=0; $i<count($games); $i++){
+        for ($i = 0; $i < count($games); $i++) {
             $games[$i]->category = $categoryRepository->getGameCategoryById($games[$i]->id);
         }
 
