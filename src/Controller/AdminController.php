@@ -45,21 +45,25 @@ class AdminController
 
                             $errorMsg = "Nom de jeu déjà existant";
                         } else {
-                            $slug = slugify($_POST['name']);
-                            $gameRepository->addGame(
-                                $_POST['name'],
-                                $slug,
-                                $_POST['description'],
-                                $_POST['nb_copies'],
-                                $_FILES['image']['name']
-                            );
                             $uploadfile = 'Images/' . basename($_FILES['image']['name']);
-                            move_uploaded_file($_FILES['image']['tmp_name'], $uploadfile);
+                            $isUploadedFile = move_uploaded_file($_FILES['image']['tmp_name'], $uploadfile);
+                            if (!$isUploadedFile) {
+                                $errorMsg = "L'image n'a pas pu être téléchargée";
+                            } else {
+                                $slug = slugify($_POST['name']);
+                                $gameRepository->addGame(
+                                    $_POST['name'],
+                                    $slug,
+                                    $_POST['description'],
+                                    $_POST['nb_copies'],
+                                    $_FILES['image']['name']
+                                );
 
-                            $category = $categoryRepository->checkcategory($_POST['category']);
-                            $game = $gameRepository->getGameBySlug($slug);
-                            $categoryRepository->addcategorytogame($category->id, $game->id);
-                            $successMsg = "Le jeu a bien été ajouté";
+                                $category = $categoryRepository->checkcategory($_POST['category']);
+                                $game = $gameRepository->getGameBySlug($slug);
+                                $categoryRepository->addcategorytogame($category->id, $game->id);
+                                $successMsg = "Le jeu a bien été ajouté";
+                            }
                         }
                     }
                 }
@@ -229,12 +233,9 @@ class AdminController
                 }
             }
             require('script_solver.php');
-            for ($i = 1; $i <= $njeux * $g; $i++) {
-                $attribution[$i - 1] = $attribution[$i];
-            }
 
             $wishesRepository->deletePastAttribution();
-            for ($i = 0; $i < $njeux * $g; $i++) {
+            for ($i = 0; $i < $gamenb * $usernb; $i++) {
                 if ($attribution[$i] == 1) {
                     $wishesRepository->fillAttributionTable($gameswishedAndUsers[floor($i / $gamenb)]->user_id, $games_id[$i % $gamenb]);
                 }

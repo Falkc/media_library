@@ -17,6 +17,7 @@ s.t. un_seul_jeu {j in 1..njeux}: sum {i in 1..g} x[i,j] <= qttjeux[j];
 
 
 
+s.t. c10 : x[2,14] == 1;
 maximize f: sum {i in 1..g, j in 1..njeux} (x[i,j]*v[i,j]);
 
 

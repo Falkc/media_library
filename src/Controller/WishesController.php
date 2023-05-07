@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Model\GameRepository;
 use App\Lib\DatabaseConnection;
 use App\Model\CategoryRepository;
+use App\Model\InformationRepository;
 use App\Model\WishesRepository;
 
 class WishesController
@@ -69,5 +70,32 @@ class WishesController
         }
 
         require('View/wishes.php');
+    }
+    public function showAttribution()
+    {
+        $phase = managePhase(2);
+
+        $wishRepository = new WishesRepository;
+        $gameRepository = new GameRepository;
+        $categoryRepository = new CategoryRepository;
+        $informationRepository = new InformationRepository();
+        $database = new DatabaseConnection;
+        $wishRepository->connection = $database;
+        $gameRepository->connection = $database;
+        $categoryRepository->connection = $database;
+        $informationRepository->connection = $database;
+        if ($informationRepository->getAttribution() == 1) {
+            $games = $wishRepository->getAttributionForUser();
+            foreach ($games as $game) {
+                $game->category = $categoryRepository->getGameCategoryById($game->id);
+            }
+            if (empty($games)) {
+                $errorMsg = 'Aucun jeux ne vous a été attribué !';
+            }
+
+            require('View/myGames.php');
+        } else {
+            header('Location:' . SITE);
+        }
     }
 }

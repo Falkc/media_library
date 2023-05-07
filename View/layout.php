@@ -55,7 +55,7 @@
 
                         <?php if (isset($_SESSION['id']) and $_SESSION['admin'] != 1) { ?>
                             <li class="nav-item">
-                                <a class="nav-link" href="<?= SITE ?>/showwishes">Mes jeux</a>
+                                <a class="nav-link" href="<?= SITE ?>/showAttribution">Mes jeux</a>
                             </li>
                         <?php } ?>
                         <li class="nav-item">

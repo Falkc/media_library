@@ -1,150 +1,210 @@
-
 <?php
-$myfile = fopen("data_glpk.dat", "w") or die("Unable to open file!");
-$g = $usernb;
-$njeux = $gamenb;
-$qttjeux = $gamequantity;
-$voeux = $wish;
-$contraintes = $constraints;
-
-
-
-//début fichier data
-$txt1 = "data;
-
-param v : ";
-for ($i = 1; $i <= $njeux; $i++) {
-    $txt1 = $txt1 . strval($i) . " ";
+//nombre d'exemplaires des jeux
+for ($i = 0; $i < $gamenb; $i++) {
+    $gamequantity[$i] = intval($gamequantity[$i]);
 }
 
-$txt1 = $txt1 . ":=
-    ";
-
-for ($i = 0; $i < $g * $njeux; $i++) {
-    if ($voeux[$i] == 0) {
-        $voeux[$i] = -1;
-    }
-}
-
-for ($i = 0; $i < $g; $i++) {
-    $txt1 = $txt1 . strval($i + 1);
-    for ($j = 0; $j < $njeux; $j++) {
-        $txt1 = $txt1 . " " . strval($voeux[$i * $njeux + $j]) . " ";
-    }
-    $txt1 = $txt1 . "
-    ";
-}
-
-$txt1 = $txt1 . ";
-
-param g := " . $g . ";
-
-param njeux := " . $njeux . ";
-
-param qttjeux := ";
-
-for ($i = 1; $i <= $njeux; $i++) {
-    $txt1 = $txt1 . "
-    " . strval($i) . " " . strval($qttjeux[$i]);
-}
-
-$txt1 = $txt1 . ";
-end;";
-//fin fichier data
-
-
-fwrite($myfile, $txt1);
-fclose($myfile);
-
-$txt = "";
-
-
-//Début du script
-$beginning_script = fopen("script_glpk_1-1.txt", "r") or die("Unable to open file!");
-while ($line = fgets($beginning_script)) {
-    $txt = $txt . $line;
-}
-fclose($beginning_script);
-
-//ajout des contraintes
-$a = 10;
-foreach ($contraintes as $contrainte) {
-    $txt = $txt . "s.t. c" . strval($a) . " : x[" . $contrainte->user_id . "," . $contrainte->game_id . "] == 1;
-";
-    $a = $a + 1;
-}
-
-
-
-
-
-
-//On modifie Voeux[] pour que les contraintes soient considérées comme des voeux
-foreach ($contraintes as $contrainte) {
-    $user = $contrainte->user_id;
-    $game = $contrainte->game_id;
-    $voeux[($user - 1) * $njeux + $game - 1] == 1;
-}
-
-
-//on contraint tout
-// foreach ($voeux as $voeu) {
-//     $user=$contrainte->user_id;
-//     $game=$contrainte->game_id;
-// 	$voeux[$user*$njeux+$game]==1;
-// }
-
-
-
-
-/*
-$b=1;
-for($i=0; $i<$njeux; $i++) {
-	
-
-
-for ($i = 1; $i <= $njeux; $i++) {
-    $txt1 = $txt1 . "
-    " . strval($i) . " " . strval($qttjeux[$i]);
-	
-}
-*/
-
-for ($j = 1; $j <= $njeux; $j++) {
-    $txt1 = $txt1 . "
-    " . strval($j) . " " . strval($qttjeux[$j]);
-}
-
-
-
-
-
-//Fin du script
-$finnish_script = fopen("script_glpk_2-1.txt", "r") or die("Unable to open file!");
-while ($line = fgets($finnish_script)) {
-    $txt = $txt . $line;
-}
-fclose($finnish_script);
-
-
-//Ecriture script_glpk.mod
-$myfile = fopen("script_glpk.mod", "w") or die("Unable to open file!");
-fwrite($myfile, $txt);
-fclose($myfile);
-
-
-
-$results = shell_exec('glpsol --model script_glpk.mod --data data_glpk.dat');
-//echo "<pre>" . $results . "</pre>";
-
+//initialisation tableau d'attribution
 $attribution = [];
-$tok = strtok($results, "@");
-while ($tok !== false) {
-    $attribution[] = $tok;
-    $tok = strtok("@");
+for ($i = 0; $i < $gamenb * $usernb; $i++) {
+    $attribution[$i] = "x";
 }
-unset($attribution[0]);
-$element = "Model has been successfully processed\n";
-unset($attribution[array_search($element, $attribution)]);
+//nombre de valeur a remplacer dans le tableau
+$nbVal = ($gamenb) * ($usernb);
 
-//echo json_encode($attribution), "\n";
+//nombre de voeux de chaques personne
+$nbWish = [];
+for ($i = 0; $i < $usernb; $i++) {
+    $nbWish[$i] = 0;
+}
+for ($i = 0; $i < $usernb; $i++) {
+    for ($j = 0; $j < $gamenb; $j++) {
+        if ($wish[$i * $gamenb + $j] == 1) {
+            $nbWish[$i]++;
+        }
+    }
+}
+
+//nombre de voeux par colonnes
+$nbWishCol = [];
+for ($j = 0; $j < $gamenb; $j++) {
+    $nbWishCol[$j] = 0;
+    for ($i = 0; $i < $usernb; $i++) {
+        if ($wish[$i * $gamenb + $j] == 1) {
+            $nbWishCol[$j]++;
+        }
+    }
+}
+
+//espérance lignes
+$rowEsperance = [];
+for ($i = 0; $i < $usernb; $i++) {
+    $sumCol = 0;
+    for ($j = 0; $j < $gamenb; $j++) {
+        if ($wish[$i * $gamenb + $j] == 1) {
+            if ($nbWishCol[$j] != 0) {
+                if ($nbWishCol[$j] <= $gamequantity[$j]) {
+                    $sumCol++;
+                } else {
+                    $sumCol = $sumCol + $gamequantity[$j] / $nbWishCol[$j];
+                }
+            }
+        }
+    }
+    $rowEsperance[$i] = 1000 * round(100 * $sumCol);
+}
+
+//on s'assure qu'il n'y ai pas 2 espérances identiques
+for ($i = 1; $i < $usernb; $i++) {
+    $rowEsperance[$i] = $rowEsperance[$i] + $i;
+}
+
+//espérance colonnes
+$columnEsperance = [];
+for ($j = 0; $j < $gamenb; $j++) {
+    if ($nbWishCol[$j] != 0) {
+        if ($nbWishCol[$j] <= $gamequantity[$j]) {
+            $columnEsperance[$j] = 1;
+        } else {
+            $columnEsperance[$j] = $gamequantity[$j] / $nbWishCol[$j];
+        }
+    } else {
+        $columnEsperance[$j] = 0;
+    }
+}
+for ($j = 0; $j < $gamenb; $j++) {
+    $columnEsperance[$j] = 1000 * intval(round(100 * $columnEsperance[$j]));
+}
+
+//on s'assure qu'il n'y ai pas 2 espérances identiques
+for ($j = 1; $j < $gamenb; $j++) {
+    $columnEsperance[$j] = $columnEsperance[$j] + $j;
+}
+
+
+//applique les contraintes
+foreach ($constraints as $constraint) {
+    $user = $constraint->user_id;
+    $game = $constraint->game_id;
+    $attribution[($user - 1) * $gamenb + $game - 1] = 1;
+    $nbVal--;
+    $gamequantity[$game - 1]--;
+    $rowEsperance[$user] = $rowEsperance[$user] + 70;
+}
+
+//pré-tri lignes
+for ($i = 0; $i < $usernb; $i++) {
+    for ($j = 0; $j < $gamenb; $j++) {
+        $rowMemo[$j] = $wish[$i * $gamenb + $j];
+        $a = $j;
+    }
+    $rowEsperance[$i] = intval($rowEsperance[$i]);
+    $rowSort[$rowEsperance[$i]] = [$i, $rowMemo];
+}
+ksort($rowSort);
+
+//tri lignes wish
+$a = 0;
+foreach ($rowSort as $rowk => $val) {
+    for ($j = 0; $j < $gamenb; $j++) {
+        $wish[$a * $gamenb + $j] = $val[1][$j];
+    }
+    $a++;
+}
+
+//pré-tri colonnes
+for ($j = 0; $j < $gamenb; $j++) {
+    for ($i = 0; $i < $usernb; $i++) {
+        $colMemo[$i] = $wish[$i * $gamenb + $j];
+    }
+    $columnSort[$columnEsperance[$j]] = [$j, $colMemo, $gamequantity[$j]];
+}
+krsort($columnSort);
+
+//tri colonnes wish
+$a = 0;
+foreach ($columnSort as $colk => $val) {
+    for ($i = 0; $i < $usernb; $i++) {
+        $wish[$i * $gamenb + $a] = $val[1][$i];
+    }
+    $gamequantity[$a] = $val[2];
+    $a++;
+}
+
+//Attribution
+while ($nbVal != 0) {
+    for ($i = 0; $i < $usernb; $i++) {
+        for ($j = 0; $j < $gamenb; $j++) {
+            if ($attribution[$i * $gamenb + $j] === "x") {
+                if ($gamequantity[$j] > 0 && $wish[$i * $gamenb + $j] == 1) {
+                    $attribution[$i * $gamenb + $j] = 1;
+                    $nbVal--;
+                    $gamequantity[$j]--;
+                    if ($nbVal == 0) {
+                        break 2;
+                    }
+                    break;
+                } else {
+                    $attribution[$i * $gamenb + $j] = 0;
+                    $nbVal--;
+                    if ($nbVal == 0) {
+                        break 2;
+                    }
+                }
+            }
+        }
+    }
+}
+
+//Pré-Tri inverse lignes
+$unRowSort = [];
+$a = 0;
+foreach ($rowSort as $rowk => $val) {
+    $rowMemo = [];
+    for ($k = 0; $k < $gamenb; $k++) {
+        $rowMemo[$k] = $attribution[$a * $gamenb + $k];
+    }
+    $unRowSort[$val[0]] = $rowMemo;
+    $a++;
+}
+ksort($unRowSort);
+
+//tri inverse lignes attribution
+$a = 0;
+foreach ($unRowSort as $rowk => $val) {
+    for ($j = 0; $j < $gamenb; $j++) {
+        $attribution[$a * $gamenb + $j] = $val[$j];
+    }
+    $a++;
+}
+
+//Pré-Tri inverse colonnes
+$unColSort = [];
+$a = 0;
+foreach ($columnSort as $colk => $val) {
+    $colMemo = [];
+    for ($i = 0; $i < $usernb; $i++) {
+        $colMemo[$i] = $attribution[$i * $gamenb + $a];
+    }
+    $unColSort[$val[0]] = $colMemo;
+    $a++;
+}
+
+ksort($unColSort);
+//tri inverse colonnes attribution
+$a = 0;
+foreach ($unColSort as $colk => $val) {
+    for ($i = 0; $i < $usernb; $i++) {
+        $attribution[$i * $gamenb + $a] = $val[$i];
+    }
+    $a++;
+}
+
+// Pour voir wish et attribution
+// echo "<br>";
+// for ($i = 0; $i < $usernb; $i++) {
+//     for ($j = 0; $j < $gamenb; $j++) {
+//         echo $wish[$i * $gamenb + $j];
+//     }
+//     echo "<br>";
+// }

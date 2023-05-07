@@ -244,4 +244,23 @@ class WishesRepository
         $gamesAndUsersNamesList = ['user_names' => $user_names, 'game_names' => $game_names];
         return $gamesAndUsersNamesList;
     }
+    function getAttributionForUser(): array
+    {
+        $statement = $this->connection->getConnection()->prepare(
+            "SELECT * FROM games WHERE id IN (SELECT game_id FROM attribution WHERE user_id = ?)"
+        );
+        $statement->execute([$_SESSION['id']]);
+        $games = [];
+        while (($row = $statement->fetch())) {
+            $game = new Game();
+            $game->id = $row['id'];
+            $game->name = $row['name'];
+            $game->slug = $row['slug'];
+            $game->description = $row['description'];
+            $game->image = $row['image'];
+
+            $games[] = $game;
+        }
+        return $games;
+    }
 }
