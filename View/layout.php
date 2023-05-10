@@ -22,7 +22,7 @@
                         <li class="nav-item">
                             <a class="nav-link" href="<?= SITE ?>/categories">Catégories</a>
                         </li>
-                        <?php if (isset($_SESSION['id']) and $_SESSION['admin'] != 1) { ?>
+                        <?php if (isset($_SESSION['id'])) { ?>
                             <li class="nav-item">
                                 <a class="nav-link" href="<?= SITE ?>/showwishes">Mes voeux</a>
                             </li>
@@ -30,12 +30,6 @@
                         <li class="nav-item">
                             <a class="nav-link" href=" http://www.association-galipette.org/site/" target="_blank">Association Galipette</a>
                         </li>
-                        <?php if (isset($date)) { ?>
-                            <li class="nav-item">
-
-                                <a class="nav-link" href=""><?= $date->format('Y-m-d') ?></a>
-                            </li>
-                        <?php } ?>
                     </ul>
                     <?php if (isset($_SESSION['id'])) { ?>
                         <a href=" <?= SITE ?>/logout"><button class="btn btn-secondary my-2 my-sm-0">Se déconnecter</button></a>

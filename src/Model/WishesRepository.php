@@ -263,4 +263,13 @@ class WishesRepository
         }
         return $games;
     }
+    public function nbWishes()
+    {
+        $statement = $this->connection->getConnection()->prepare(
+            'SELECT COUNT(DISTINCT game_id) AS nb FROM wishes WHERE user_id=?'
+        );
+        $statement->execute([$_SESSION['id']]);
+        $nbWishes = $statement->fetch()['nb'];
+        return $nbWishes;
+    }
 }

@@ -24,9 +24,18 @@ class WishesController
         $gameRepository->connection = $database;
 
         $date = new DateTime($informationRepository->getDeadLine());
-        $game = $gameRepository->getGameBySlug($_GET['game_slug']);
-        $wishRepository->addwish($_SESSION['id'], $game->id);
-        header("Location:" . SITE . "/game/" . $game->slug);
+        $check = $this->checkWishAdding();
+        if ($check == 0) {
+            $game = $gameRepository->getGameBySlug($_GET['game_slug']);
+            $wishRepository->addwish($_SESSION['id'], $game->id);
+        } else if ($check == 1) {
+            $_SESSION['wishError'] = "La date limite pour la formulation des voeux est atteinte, vous ne pouvez pas ajouter de voeux !";
+            $_SESSION['displayWishError'] = 1;
+        } else if ($check == 2) {
+            $_SESSION['wishError'] = "Vous ne pouvez pas formuler plus de 6 voeux !";
+            $_SESSION['displayWishError'] = 1;
+        }
+        header("Location:" . SITE . "/game/" . $_GET['game_slug']);
     }
     public function deletewishandredirect()
     {
@@ -105,6 +114,29 @@ class WishesController
             require('View/myGames.php');
         } else {
             header('Location:' . SITE);
+        }
+    }
+    private function checkWishAdding()
+    {
+        $informationRepository = new InformationRepository();
+        $wishesRepository = new WishesRepository();
+        $database = new DatabaseConnection();
+        $informationRepository->connection = $database;
+        $wishesRepository->connection = $database;
+
+        $now = new DateTime('now');
+        $date = new DateTime($informationRepository->getDeadLine());
+        $wishNb = $wishesRepository->nbWishes();
+
+        if ($date > $now && $date->format('Y-m-d') != $now->format('Y-m-d') && intval($wishNb) < 6) {
+            var_dump(intval($wishNb));
+            var_dump($wishNb);
+            return 0;
+        } else if ($date <= $now || $date->format('Y-m-d') == $now->format('Y-m-d')) {
+            return 1;
+        } else if (intval($wishNb) >= 6) {
+            // var_dump($wishNb);
+            return 2;
         }
     }
 }

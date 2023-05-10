@@ -7,9 +7,13 @@
   echo "<h2> Pas connecté </h2>";
 }
 ?>
-<div>
-  <h2> La date limite pour émettre des voeux est le <?= $date->format('d-m-Y') ?> </h2>
-</div>
+<?php if ($phase == 1) { ?>
+
+  <div>
+    <h2> La date limite pour émettre des voeux est le <?= $date->format('d-m-Y') ?> </h2>
+  </div>
+<?php
+} ?>
 <div class="row">
   <?php foreach ($games as $i => $game) { ?>
     <div class="card m-3" style="width: 18rem;">

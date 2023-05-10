@@ -30,7 +30,7 @@
                         </li>
                         <?php if (isset($date)) { ?>
                             <li class="nav-item">
-                                <a class="nav-link" href=""><?= $date->format('Y-m-d') ?></a>
+                                <a class="nav-link" href="<?= SITE ?>/admin/updateDeadLine"><?= $date->format('Y-m-d') ?></a>
                             </li>
                         <?php } ?>
                     </ul>

@@ -311,4 +311,35 @@ class AdminController
             require('view/admin/passToPhase1.php');
         }
     }
+    public function updateDeadLine()
+    {
+        if ($_SESSION['admin'] != 1) {
+            header("Location: " . SITE);
+        } else {
+            $informationRepository = new InformationRepository();
+            $database = new DatabaseConnection();
+            $informationRepository->connection = $database;
+
+            $phase = managePhase(1);
+            $now = new DateTime('now');
+            if (isset($_POST['date'])) {
+                $date = new DateTime($_POST['date']);
+                if ($date > $now && $date->format('Y-m-d') != $now->format('Y-m-d')) {
+                    $informationRepository->modifyDate($date);
+                    $successMsg = 'Vous venez de passer à la phase de voeux.';
+                } else {
+                    $errorMsg = 'Vous devez sélectionner une date correcte.';
+                }
+            } else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                $errorMsg = 'Vous devez sélectionner une date correcte.';
+            }
+            require('view/admin/updateDeadLine.php');
+        }
+    }
+    private function checkWishAdding()
+    {
+        $informationRepository = new InformationRepository();
+        $database = new DatabaseConnection();
+        $informationRepository->connection = $database;
+    }
 }

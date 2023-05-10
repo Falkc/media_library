@@ -20,6 +20,7 @@ RewriteRule ^admin/showwishes(/(\d*))?$ index.php?p=admin/showwishes&pos=$2
 RewriteRule ^admin/attribution/?$ index.php?p=admin/attribution
 
 RewriteRule ^admin/passToPhase1/?$ index.php?p=admin/passToPhase1
+RewriteRule ^admin/updateDeadLine/?$ index.php?p=admin/updateDeadLine
 
 RewriteRule ^showAttribution/?$ index.php?p=wishes/showAttribution
 

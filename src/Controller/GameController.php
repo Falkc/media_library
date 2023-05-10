@@ -29,6 +29,13 @@ class GameController
             header("Location:" . SITE);
             exit;
         }
+        if (isset($_SESSION['displayWishError'])) {
+            if ($_SESSION['displayWishError']) {
+                $_SESSION['displayWishError'] = 0;
+            } else {
+                unset($_SESSION['wishError']);
+            }
+        }
 
         $game_slug = $_GET['game'];
         $game = $gameRepository->getGameBySlug($game_slug);
