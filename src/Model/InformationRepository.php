@@ -47,4 +47,12 @@ class InformationRepository
         $date_string = $date->format('Y-m-d H:i:s');
         $statement->execute([$date_string]);
     }
+    public function getDeadLine()
+    {
+        $statement = $this->connection->getConnection()->query(
+            "SELECT dead_line FROM information WHERE id=1"
+        );
+        $dead_line = $statement->fetch()['dead_line'];
+        return $dead_line;
+    }
 }

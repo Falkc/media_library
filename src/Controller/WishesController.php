@@ -2,11 +2,12 @@
 
 namespace App\Controller;
 
+use DateTime;
 use App\Model\GameRepository;
 use App\Lib\DatabaseConnection;
+use App\Model\WishesRepository;
 use App\Model\CategoryRepository;
 use App\Model\InformationRepository;
-use App\Model\WishesRepository;
 
 class WishesController
 {
@@ -14,13 +15,15 @@ class WishesController
     public function addwish()
     {
         $phase = managePhase(1);
-        $wishRepository = new WishesRepository;
-        $gameRepository = new GameRepository;
-        $database = new DatabaseConnection;
+        $wishRepository = new WishesRepository();
+        $gameRepository = new GameRepository();
+        $informationRepository = new InformationRepository();
+        $database = new DatabaseConnection();
+        $informationRepository->connection = $database;
         $wishRepository->connection = $database;
         $gameRepository->connection = $database;
 
-
+        $date = new DateTime($informationRepository->getDeadLine());
         $game = $gameRepository->getGameBySlug($_GET['game_slug']);
         $wishRepository->addwish($_SESSION['id'], $game->id);
         header("Location:" . SITE . "/game/" . $game->slug);
@@ -40,12 +43,15 @@ class WishesController
     private function deletewish($game_slug)
     {
         $phase = managePhase(1);
-        $wishRepository = new WishesRepository;
-        $gameRepository = new GameRepository;
-        $database = new DatabaseConnection;
+        $wishRepository = new WishesRepository();
+        $gameRepository = new GameRepository();
+        $informationRepository = new InformationRepository();
+        $database = new DatabaseConnection();
+        $informationRepository->connection = $database;
         $wishRepository->connection = $database;
         $gameRepository->connection = $database;
 
+        $date = new DateTime($informationRepository->getDeadLine());
         $game = $gameRepository->getGameBySlug($game_slug);
         $wishRepository->deletewish($_SESSION['id'], $game->id);
         return $game;
@@ -53,14 +59,17 @@ class WishesController
     public function showwishes()
     {
         $phase = managePhase(1);
-        $wishRepository = new WishesRepository;
-        $gameRepository = new GameRepository;
-        $categoryRepository = new CategoryRepository;
-        $database = new DatabaseConnection;
+        $wishRepository = new WishesRepository();
+        $gameRepository = new GameRepository();
+        $categoryRepository = new CategoryRepository();
+        $informationRepository = new InformationRepository();
+        $database = new DatabaseConnection();
+        $informationRepository->connection = $database;
         $wishRepository->connection = $database;
         $gameRepository->connection = $database;
         $categoryRepository->connection = $database;
 
+        $date = new DateTime($informationRepository->getDeadLine());
         $games = $wishRepository->getwishes();
         foreach ($games as $game) {
             $game->category = $categoryRepository->getGameCategoryById($game->id);

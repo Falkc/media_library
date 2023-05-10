@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use DateTime;
 use App\Model\UserRepository;
 use App\Lib\DatabaseConnection;
 use App\Model\InformationRepository;
@@ -20,6 +21,7 @@ class UserController
                 $informationRepository->connection = $database;
 
                 $phase = $informationRepository->getPhase();
+                $date = new DateTime($informationRepository->getDeadLine());
                 if (
                     empty($_POST['last_name']) || empty($_POST['first_name']) || empty($_POST['email']) ||
                     empty($_POST['password']) || empty($_POST['password_verification'])
@@ -76,6 +78,7 @@ class UserController
         $informationRepository->connection = $database;
 
         $phase = $informationRepository->getPhase();
+        $date = new DateTime($informationRepository->getDeadLine());
 
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
@@ -99,6 +102,7 @@ class UserController
         $informationRepository->connection = $database;
 
         $phase = $informationRepository->getPhase();
+        $date = new DateTime($informationRepository->getDeadLine());
 
         session_unset();
         session_destroy();

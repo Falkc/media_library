@@ -86,10 +86,10 @@ for ($j = 1; $j < $gamenb; $j++) {
 foreach ($constraints as $constraint) {
     $user = $constraint->user_id;
     $game = $constraint->game_id;
-    $attribution[($user - 1) * $gamenb + $game - 1] = 1;
+    $wish[($user - 1) * $gamenb + $game - 1] = "c";
     $nbVal--;
     $gamequantity[$game - 1]--;
-    $rowEsperance[$user] = $rowEsperance[$user] + 70;
+    $rowEsperance[$user - 1] = $rowEsperance[$user - 1] + 70000;
 }
 
 //pré-tri lignes
@@ -130,6 +130,15 @@ foreach ($columnSort as $colk => $val) {
     $gamequantity[$a] = $val[2];
     $a++;
 }
+
+for ($i = 0; $i < $usernb; $i++) {
+    for ($j = 0; $j < $gamenb; $j++) {
+        if ($wish[$i * $gamenb + $j] === "c") {
+            $attribution[$i * $gamenb + $j] = 1;
+        }
+    }
+}
+
 
 //Attribution
 while ($nbVal != 0) {

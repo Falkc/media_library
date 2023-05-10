@@ -30,6 +30,7 @@ class AdminController
                 $informationRepository->connection = $database;
 
                 $phase = $informationRepository->getPhase();
+                $date = new DateTime($informationRepository->getDeadLine());
 
                 if (empty($_POST['name']) || empty($_POST['category']) || empty($_POST['nb_copies'])) {
 
@@ -73,6 +74,8 @@ class AdminController
                 $database = new DatabaseConnection();
                 $informationRepository->connection = $database;
                 $categoryRepository->connection = $database;
+
+                $date = new DateTime($informationRepository->getDeadLine());
                 $phase = $informationRepository->getPhase();
             }
             $categories = $categoryRepository->getCategories();
@@ -110,10 +113,12 @@ class AdminController
         } else {
             $phase = managePhase(1);
 
+            $informationRepository = new InformationRepository();
             $gameRepository = new GameRepository();
             $wishesRepository = new WishesRepository();
             $userRepositary = new UserRepository();
             $database = new DatabaseConnection();
+            $informationRepository->connection = $database;
             $gameRepository->connection = $database;
             $wishesRepository->connection = $database;
             $userRepositary->connection = $database;
@@ -121,6 +126,7 @@ class AdminController
             $informations = $wishesRepository->getwishesforadmin();
             $game_names = $wishesRepository->getDistinctGamesFromWishes();
 
+            $date = new DateTime($informationRepository->getDeadLine());
             $allUsers = $userRepositary->getUsers();
             $allGames = $gameRepository->getGames();
             if (empty($informations)) {
@@ -171,11 +177,15 @@ class AdminController
             header("Location: " . SITE);
         } else {
             $phase = managePhase(1);
+            $informationRepository = new InformationRepository();
             $gameRepository = new GameRepository();
-            $wishesRepository = new WishesRepository;
+            $wishesRepository = new WishesRepository();
             $database = new DatabaseConnection();
+            $informationRepository->connection = $database;
             $gameRepository->connection = $database;
             $wishesRepository->connection = $database;
+
+            $date = new DateTime($informationRepository->getDeadLine());
 
             //nb jeux
 

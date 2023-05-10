@@ -30,9 +30,15 @@
                         <li class="nav-item">
                             <a class="nav-link" href=" http://www.association-galipette.org/site/" target="_blank">Association Galipette</a>
                         </li>
+                        <?php if (isset($date)) { ?>
+                            <li class="nav-item">
+
+                                <a class="nav-link" href=""><?= $date->format('Y-m-d') ?></a>
+                            </li>
+                        <?php } ?>
                     </ul>
                     <?php if (isset($_SESSION['id'])) { ?>
-                        <a href="<?= SITE ?>/logout"><button class="btn btn-secondary my-2 my-sm-0">Se déconnecter</button></a>
+                        <a href=" <?= SITE ?>/logout"><button class="btn btn-secondary my-2 my-sm-0">Se déconnecter</button></a>
                     <?php } else { ?>
                         <a href="<?= SITE ?>/register"><button class="btn btn-secondary my-2 my-sm-0 mx-3">S'inscrire</button></a>
                         <a href="<?= SITE ?>/login"><button class="btn btn-secondary my-2 my-sm-0">Se connecter</button></a>

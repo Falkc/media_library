@@ -2,11 +2,12 @@
 
 namespace App\Controller;
 
+use DateTime;
 use App\Model\GameRepository;
 use App\Lib\DatabaseConnection;
+use App\Model\WishesRepository;
 use App\Model\CategoryRepository;
 use App\Model\InformationRepository;
-use App\Model\WishesRepository;
 
 class GameController
 {
@@ -21,6 +22,8 @@ class GameController
         $wishRepository->connection = $database;
         $gameRepository->connection = $database;
         $informationRepository->connection = $database;
+
+        $date = new DateTime($informationRepository->getDeadLine());
 
         if (empty($_GET['game'])) {
             header("Location:" . SITE);
