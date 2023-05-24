@@ -1,10 +1,10 @@
 <?php
 
 session_start();
-// define('SITE',"/~noecabl9901");
-// define('URL',"https://devbox.u-angers.fr/~noecabl9901/");
-define('SITE', "/media_library");
-define('URL', "/media_library/");
+define('SITE',"/~noecabl9901");
+define('URL',"https://devbox.u-angers.fr/~noecabl9901/");
+// define('SITE', "/media_library");
+// define('URL', "/media_library/");
 require_once('src/Lib/autoloader.php');
 require_once('src/Lib/functions.php');
 

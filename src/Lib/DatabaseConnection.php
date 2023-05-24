@@ -16,10 +16,10 @@ class DatabaseConnection
             // $db = 'noecabl9901';
             $host = 'localhost';
             $user = 'root';
-            $pass = 'root';
+            $pass = '';
             $port = '';
             $db = 'test_media_library';
-            $this->database = new \PDO('mysql:host=' . $host . ';port=' . $port . ';dbname=' . $db . ";charset=utf8", $user, $pass);
+            $this->database = new \PDO('mysql:host='.$host.';port='.$port.';dbname='.$db.";charset=utf8", $user, $pass);
         }
         return $this->database;
     }
