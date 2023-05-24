@@ -28,8 +28,8 @@
             </tbody>
     </table>
     <br>
-    <a href='<?= SITE ?>/admin/cancelAttribution/'> <button type="boutton" class="btn btn-lg btn-danger">Annuler l'attribution</button></a>
-    <a href='<?= SITE ?>/admin/acceptAttribution/'> <button type="boutton" class="btn btn-lg btn-primary">Accepter l'attribution et changer de phase</button></a>
+    <a href='<?= SITE ?>/admin/showwishes/'> <button type="boutton" class="btn btn-lg btn-danger">Annuler l'attribution</button></a>
+    <a href='<?= SITE ?>/admin/showwishes/'> <button type="boutton" class="btn btn-lg btn-primary">Accepter l'attribution</button></a>
 
 <?php }
 $content = ob_get_clean(); ?>

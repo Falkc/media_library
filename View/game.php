@@ -20,6 +20,8 @@
                         </span>
                     </a>
                 </p>
+                <h5>Nombre d'exemplaires :</h5>
+                <p> <?= $game->nb_copies ?> </p>
                 <h5>Description du jeu :</h5>
                 <p> <?= $game->description ?> </p>
             </div>

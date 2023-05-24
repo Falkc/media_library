@@ -83,6 +83,29 @@ class GameRepository
 
         return $game;
     }
+    public function getGameById(string $id): Game
+    {
+        // We retrieve the game linked to the id.
+        $statement = $this->connection->getConnection()->prepare(
+            "SELECT * FROM games WHERE id=?"
+        );
+        $statement->execute([$id]);
+        $row =  $statement->fetch();
+
+        if (empty($row)) {
+            return null;
+        }
+
+        $game = new Game();
+        $game->id = $row['id'];
+        $game->name = $row['name'];
+        $game->slug = $row['slug'];
+        $game->description = $row['description'];
+        $game->image = $row['image'];
+        $game->nb_copies = $row['nb_copies'];
+
+        return $game;
+    }
     // methode des jeux à une catégorie
     public function getGamesByCategory(Category $category, array $linktable): array
     {
@@ -138,6 +161,29 @@ class GameRepository
             "INSERT INTO games(name, slug, description, image, nb_copies) VALUES(:name, :slug, :description, :image, :nb_copies)"
         );
         $insert->execute([
+            'name' => $name,
+            'slug' => $slug,
+            'description' => $description,
+            'image' => $image,
+            'nb_copies' => $nb_copies
+
+        ]);
+    }
+    public function modifyGameById(string $id, string $name, string $slug, string $description, string $nb_copies, string $image): void
+    {
+        $id = htmlspecialchars($id);
+        $name = htmlspecialchars($name);
+        $slug = htmlspecialchars($slug);
+        $description = htmlspecialchars($description);
+        $nb_copies = htmlspecialchars($nb_copies);
+        $image = htmlspecialchars($image);
+        $update = $this->connection->getConnection()->prepare(
+            "UPDATE games
+            SET name = :name, slug = :slug, description = :description, image = :image, nb_copies = :nb_copies
+            WHERE id = :id"
+        );
+        $update->execute([
+            'id' => $id,
             'name' => $name,
             'slug' => $slug,
             'description' => $description,

@@ -12,7 +12,7 @@ class WishesController
 
     public function addwish()
     {
-        $phase = managePhase(1);
+        managePhase(1);
         $wishRepository = new WishesRepository;
         $gameRepository = new GameRepository;
         $database = new DatabaseConnection;
@@ -26,7 +26,7 @@ class WishesController
     }
     public function deletewishandredirect()
     {
-        $phase = managePhase(1);
+        managePhase(1);
         $game = $this->deletewish($_GET['game_slug']);
         $redirect = $_GET['redirect'];
         if ($redirect == 0) {
@@ -38,7 +38,7 @@ class WishesController
     }
     private function deletewish($game_slug)
     {
-        $phase = managePhase(1);
+        managePhase(1);
         $wishRepository = new WishesRepository;
         $gameRepository = new GameRepository;
         $database = new DatabaseConnection;
@@ -51,7 +51,7 @@ class WishesController
     }
     public function showwishes()
     {
-        $phase = managePhase(1);
+        managePhase(1);
         $wishRepository = new WishesRepository;
         $gameRepository = new GameRepository;
         $categoryRepository = new CategoryRepository;

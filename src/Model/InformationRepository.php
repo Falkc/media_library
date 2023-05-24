@@ -2,7 +2,6 @@
 
 namespace App\Model;
 
-use DateTime;
 use App\Lib\DatabaseConnection;
 
 class InformationRepository
@@ -16,35 +15,5 @@ class InformationRepository
         );
         $phase = $statement->fetch()['phase'];
         return $phase;
-    }
-    public function getAttribution(): bool // retourne 1 s'il existe une attribution 0 sinon
-    {
-        $statement = $this->connection->getConnection()->query(
-            "SELECT attribution FROM information WHERE id=1"
-        );
-        $attribution = $statement->fetch()['attribution'];
-        return $attribution;
-    }
-    public function modifyAttribution(int $value): void
-    {
-        $statement = $this->connection->getConnection()->prepare(
-            "UPDATE information SET attribution=? WHERE id=1"
-        );
-        $statement->execute([$value]);
-    }
-    public function modifyPhase(int $value): void
-    {
-        $statement = $this->connection->getConnection()->prepare(
-            "UPDATE information SET phase=? WHERE id=1"
-        );
-        $statement->execute([$value]);
-    }
-    public function modifyDate(DateTime $date): void
-    {
-        $statement = $this->connection->getConnection()->prepare(
-            "UPDATE information SET dead_line=? WHERE id=1"
-        );
-        $date_string = $date->format('Y-m-d H:i:s');
-        $statement->execute([$date_string]);
     }
 }

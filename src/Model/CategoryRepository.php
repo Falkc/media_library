@@ -100,6 +100,19 @@ class CategoryRepository
             'game_id' => $game_id,
         ]);
     }
+    public function modifyGameCategory($category_id, $game_id)
+    {
+
+        $insert = $this->connection->getConnection()->prepare(
+            "UPDATE category_game
+            SET category_id = :category_id
+            WHERE game_id = :game_id"
+        );
+        $insert->execute([
+            'category_id' => $category_id,
+            'game_id' => $game_id,
+        ]);
+    }
 
     public function getGameCategoryById(string $id): Category
     {
