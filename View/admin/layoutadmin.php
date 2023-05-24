@@ -28,11 +28,13 @@
                         <li class="nav-item">
                             <a class="nav-link" href="<?= SITE ?>/admin/showwishes">Voir les voeux</a>
                         </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link" href=" http://www.association-galipette.org/site/">Association Galipette</a>
-                        </li>
+                        <?php if (isset($date)) { ?>
+                            <li class="nav-item">
+                                <a class="nav-link" href="<?= SITE ?>/admin/updateDeadLine"><?= $date->format('Y-m-d') ?></a>
+                            </li>
+                        <?php } ?>
                     </ul>
+
                     <?php if (isset($_SESSION['id'])) { ?>
                         <a href="<?= SITE ?>/logout"><button class="btn btn-secondary my-2 my-sm-0">Se déconnecter</button></a>
                     <?php } else { ?>
@@ -61,10 +63,6 @@
 
                         <li class="nav-item">
                             <a class="nav-link" href="<?= SITE ?>/admin/passToPhase1">Passer à la phase de voeux</a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link" href=" http://www.association-galipette.org/site/">Association Galipette</a>
                         </li>
                     </ul>
                     <?php if (isset($_SESSION['id'])) { ?>

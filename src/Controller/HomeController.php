@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use DateTime;
 use App\Model\GameRepository;
 use App\Lib\DatabaseConnection;
 use App\Model\CategoryRepository;
@@ -20,6 +21,7 @@ class HomeController
 
         $informationRepository->connection = $database;
 
+        $date = new DateTime($informationRepository->getDeadLine());
         $phase = $informationRepository->getPhase();
         $nbGames = $gameRepository->getGamesNb();
         $NbGamesByPage = 16;

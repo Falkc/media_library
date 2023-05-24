@@ -22,7 +22,7 @@
                         <li class="nav-item">
                             <a class="nav-link" href="<?= SITE ?>/categories">Catégories</a>
                         </li>
-                        <?php if (isset($_SESSION['id']) and $_SESSION['admin'] != 1) { ?>
+                        <?php if (isset($_SESSION['id'])) { ?>
                             <li class="nav-item">
                                 <a class="nav-link" href="<?= SITE ?>/showwishes">Mes voeux</a>
                             </li>
@@ -32,7 +32,7 @@
                         </li>
                     </ul>
                     <?php if (isset($_SESSION['id'])) { ?>
-                        <a href="<?= SITE ?>/logout"><button class="btn btn-secondary my-2 my-sm-0">Se déconnecter</button></a>
+                        <a href=" <?= SITE ?>/logout"><button class="btn btn-secondary my-2 my-sm-0">Se déconnecter</button></a>
                     <?php } else { ?>
                         <a href="<?= SITE ?>/register"><button class="btn btn-secondary my-2 my-sm-0 mx-3">S'inscrire</button></a>
                         <a href="<?= SITE ?>/login"><button class="btn btn-secondary my-2 my-sm-0">Se connecter</button></a>
@@ -55,7 +55,7 @@
 
                         <?php if (isset($_SESSION['id']) and $_SESSION['admin'] != 1) { ?>
                             <li class="nav-item">
-                                <a class="nav-link" href="<?= SITE ?>/showwishes">Mes jeux</a>
+                                <a class="nav-link" href="<?= SITE ?>/showAttribution">Mes jeux</a>
                             </li>
                         <?php } ?>
                         <li class="nav-item">
