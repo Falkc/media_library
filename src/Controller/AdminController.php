@@ -28,6 +28,10 @@ class AdminController
                 $database = new DatabaseConnection();
                 $gameRepository->connection = $database;
                 $categoryRepository->connection = $database;
+                $informationRepository->connection = $database;
+
+                $phase = $informationRepository->getPhase();
+                $date = new DateTime($informationRepository->getDeadLine());
 
                 if (empty($_POST['name']) || empty($_POST['category']) || empty($_POST['nb_copies'])) {
 
@@ -45,7 +49,9 @@ class AdminController
                             $errorMsg = "Nom de jeu déjà existant";
                         } else {
                             $uploadfile = 'Images/' . basename($_FILES['image']['name']);
-                            $isUploadedFile=move_uploaded_file($_FILES['image']['tmp_name'], $uploadfile);
+
+                            $isUploadedFile = move_uploaded_file($_FILES['image']['tmp_name'], $uploadfile);
+
                             if (!$isUploadedFile) {
                                 $errorMsg = "L'image n'a pas pu être téléchargée";
                             } else {
@@ -91,6 +97,7 @@ class AdminController
                 $categoryRepository->connection = $database;
                 $gameRepository->connection = $database;
 
+                $date = new DateTime($informationRepository->getDeadLine());
                 $phase = $informationRepository->getPhase();
                 $game = $gameRepository->getGameById($_GET['game_id']);
                 $game->category = $categoryRepository->getGameCategoryById($game->id);
@@ -196,10 +203,12 @@ class AdminController
         } else {
             managePhase(1);
 
+            $informationRepository = new InformationRepository();
             $gameRepository = new GameRepository();
             $wishesRepository = new WishesRepository();
             $userRepositary = new UserRepository();
             $database = new DatabaseConnection();
+            $informationRepository->connection = $database;
             $gameRepository->connection = $database;
             $wishesRepository->connection = $database;
             $userRepositary->connection = $database;
@@ -207,6 +216,7 @@ class AdminController
             $informations = $wishesRepository->getwishesforadmin();
             $game_names = $wishesRepository->getDistinctGamesFromWishes();
 
+            $date = new DateTime($informationRepository->getDeadLine());
             $allUsers = $userRepositary->getUsers();
             $allGames = $gameRepository->getGames();
             if (empty($informations)) {
@@ -256,12 +266,16 @@ class AdminController
         if ($_SESSION['admin'] != 1) {
             header("Location: " . SITE);
         } else {
-            managePhase(1);
+            $phase = managePhase(1);
+            $informationRepository = new InformationRepository();
             $gameRepository = new GameRepository();
-            $wishesRepository = new WishesRepository;
+            $wishesRepository = new WishesRepository();
             $database = new DatabaseConnection();
+            $informationRepository->connection = $database;
             $gameRepository->connection = $database;
             $wishesRepository->connection = $database;
+
+            $date = new DateTime($informationRepository->getDeadLine());
 
             //nb jeux
 
@@ -319,12 +333,9 @@ class AdminController
                 }
             }
             require('script_solver.php');
-            for ($i = 1; $i <= $njeux * $g; $i++) {
-                $attribution[$i - 1] = $attribution[$i];
-            }
 
             $wishesRepository->deletePastAttribution();
-            for ($i = 0; $i < $njeux * $g; $i++) {
+            for ($i = 0; $i < $gamenb * $usernb; $i++) {
                 if ($attribution[$i] == 1) {
                     $wishesRepository->fillAttributionTable($gameswishedAndUsers[floor($i / $gamenb)]->user_id, $games_id[$i % $gamenb]);
                 }
@@ -414,12 +425,43 @@ class AdminController
             require('View/admin/modifyUser.php');
         }
     }
-
+  
     private function checkRegistrationInfo(string $last_name, string $first_name, string $email){
         if(strlen($last_name) > 255) return "Votre nom de famille est trop long";
         if(strlen($first_name) > 255) return "Votre prénom est trop long";
         if(!filter_var($email, FILTER_VALIDATE_EMAIL)) return "Votre e-mail n'est pas valide";
         if(strlen($email) > 255) return "Votre e-mail est trop long";
         return "";
+    }
+    public function updateDeadLine()
+    {
+        if ($_SESSION['admin'] != 1) {
+            header("Location: " . SITE);
+        } else {
+            $informationRepository = new InformationRepository();
+            $database = new DatabaseConnection();
+            $informationRepository->connection = $database;
+
+            $phase = managePhase(1);
+            $now = new DateTime('now');
+            if (isset($_POST['date'])) {
+                $date = new DateTime($_POST['date']);
+                if ($date > $now && $date->format('Y-m-d') != $now->format('Y-m-d')) {
+                    $informationRepository->modifyDate($date);
+                    $successMsg = 'Vous venez de passer à la phase de voeux.';
+                } else {
+                    $errorMsg = 'Vous devez sélectionner une date correcte.';
+                }
+            } else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                $errorMsg = 'Vous devez sélectionner une date correcte.';
+            }
+            require('view/admin/updateDeadLine.php');
+        }
+    }
+    private function checkWishAdding()
+    {
+        $informationRepository = new InformationRepository();
+        $database = new DatabaseConnection();
+        $informationRepository->connection = $database;
     }
 }

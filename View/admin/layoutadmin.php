@@ -10,32 +10,69 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-danger">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="<?= SITE ?>">Médiathèque</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarColor01">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?= SITE ?>/categories">Catégories</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?= SITE ?>/admin/game/add/">Ajouter un jeu</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?= SITE ?>/admin/showwishes">Voir les voeux</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?= SITE ?>/admin/members/show">Voir les membres</a>
-                    </li>
-                </ul>
+    <?php if ($phase == 1) { ?>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="<?= SITE ?>">Médiathèque</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarColor01">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?= SITE ?>/categories">Catégories</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?= SITE ?>/admin/game/add/">Ajouter un jeu</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?= SITE ?>/admin/showwishes">Voir les voeux</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" href="<?= SITE ?>/admin/members/show">Voir les membres</a>
+                        </li>
+                        <?php if (isset($date)) { ?>
+                            <li class="nav-item">
+                                <a class="nav-link" href="<?= SITE ?>/admin/updateDeadLine"><?= $date->format('Y-m-d') ?></a>
+                            </li>
+                        <?php } ?>
+                    </ul>
                     <a href="<?= SITE ?>/register"><button class="btn btn-light my-2 my-sm-0 mx-3">Créer un compte</button></a>
                     <a href="<?= SITE ?>/logout"><button class="btn btn-light my-2 my-sm-0">Se déconnecter</button></a>
+                </div>
             </div>
-        </div>
-    </nav>
+        </nav>
+    <?php } else if ($phase == 2) { ?>
+
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="<?= SITE ?>">Médiathèque</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarColor01">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?= SITE ?>/categories">Catégories</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?= SITE ?>/admin/game/add/">Ajouter un jeu</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" href="<?= SITE ?>/admin/members/show">Voir les membres</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?= SITE ?>/admin/passToPhase1">Passer à la phase de voeux</a>
+                        </li>
+                    </ul>
+                    <a href="<?= SITE ?>/register"><button class="btn btn-light my-2 my-sm-0 mx-3">Créer un compte</button></a>
+                    <a href="<?= SITE ?>/logout"><button class="btn btn-light my-2 my-sm-0">Se déconnecter</button></a>
+                </div>
+            </div>
+        </nav>
+
+
+    <?php } ?>
     <div class="container">
         <?= $content ?>
     </div>

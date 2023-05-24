@@ -10,6 +10,7 @@
 </head>
 
 <body>
+  <?php if ($phase == 1) { ?>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">
             <a class="navbar-brand" href="<?= SITE ?>">Médiathèque</a>
@@ -38,6 +39,36 @@
             </div>
         </div>
     </nav>
+    <?php } else if ($phase == 2) { ?>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="<?= SITE ?>">Médiathèque</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarColor01">
+                    <ul class="navbar-nav me-auto">
+                        <?php if (isset($_SESSION['id'])) { ?>
+                            <li class="nav-item">
+                                <a class="nav-link" href="<?= SITE ?>/categories">Catégories</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="<?= SITE ?>/showAttribution">Mes jeux</a>
+                            </li>
+                        <?php } ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href=" http://www.association-galipette.org/site/" target="_blank">Association Galipette</a>
+                        </li>
+                    </ul>
+                    <?php if (isset($_SESSION['id'])) { ?>
+                    <a href="<?= SITE ?>/logout"><button class="btn btn-secondary my-2 my-sm-0">Se déconnecter</button></a>
+                <?php } else { ?>
+                    <a href="<?= SITE ?>/login"><button class="btn btn-secondary my-2 my-sm-0">Se connecter</button></a>
+                <?php } ?>
+                </div>
+            </div>
+  </nav>
+    <?php } ?>
     <div class="container">
         <?= $content ?>
     </div>

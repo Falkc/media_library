@@ -1,6 +1,7 @@
 <?php
 namespace App\Controller;
 
+use DateTime;
 use App\Model\UserRepository;
 use App\Lib\DatabaseConnection;
 
@@ -14,8 +15,15 @@ class UserController {
                 $userRepository = new UserRepository();
                 $database = new DatabaseConnection();
                 $userRepository->connection = $database;
-                if (empty($_POST['last_name']) || empty($_POST['first_name']) || empty($_POST['email']) ||
-                    empty($_POST['password']) || empty($_POST['password_verification'])){
+                $informationRepository = new InformationRepository();
+                $informationRepository->connection = $database;
+
+                $phase = $informationRepository->getPhase();
+                $date = new DateTime($informationRepository->getDeadLine());
+                if (
+                    empty($_POST['last_name']) || empty($_POST['first_name']) || empty($_POST['email']) ||
+                    empty($_POST['password']) || empty($_POST['password_verification'])
+                ) {
 
                     $errorMsg = "Veuillez remplir tout les champs";
 
@@ -63,11 +71,12 @@ class UserController {
 
     public function login(){
 
-        if($_SERVER['REQUEST_METHOD'] == 'POST'){
-            $userRepository = new UserRepository();
-            $database = new DatabaseConnection();
-            $userRepository->connection = $database;
-            if(empty($_POST['email']) || empty($_POST['password'])){
+        $phase = $informationRepository->getPhase();
+        $date = new DateTime($informationRepository->getDeadLine());
+
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+
+            if (empty($_POST['email']) || empty($_POST['password'])) {
                 $errorMsg = "Veuillez remplir tout les champs";
             }else{
                 $errorMsg = $userRepository->checkLogin($_POST['email'],$_POST['password']);

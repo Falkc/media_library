@@ -6,7 +6,14 @@
     echo "<h2>" . $errorMsg . "</h2>";
 } else { ?>
 
+
+
     <div class="container my-5">
+        <?php if (isset($_SESSION['wishError'])) { ?>
+            <div class="alert alert-danger" role="alert">
+                <?= $_SESSION['wishError'] ?>
+            </div>
+        <?php } ?>
         <div class="row">
             <div class="col-md-3">
                 <img src="<?= URL . "Images/" . $game->image ?>" class=" card-img-top flex-shrink-0" alt="<?= "Images/" . $game->image ?>">

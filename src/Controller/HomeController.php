@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use DateTime;
 use App\Model\GameRepository;
 use App\Lib\DatabaseConnection;
 use App\Model\CategoryRepository;
@@ -15,6 +16,11 @@ class HomeController
         $database = new DatabaseConnection();
         $categoryRepository->connection = $database;
         $gameRepository->connection = $database;
+
+        $informationRepository->connection = $database;
+
+        $date = new DateTime($informationRepository->getDeadLine());
+        $phase = $informationRepository->getPhase();
         $nbGames = $gameRepository->getGamesNb();
         $NbGamesByPage = 16;
         $nbPages = ceil($nbGames / $NbGamesByPage); //on calcul le nombre de pages

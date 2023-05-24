@@ -2,10 +2,12 @@
 
 namespace App\Controller;
 
+use DateTime;
+use App\Model\GameRepository;
+use App\Model\Entity\Category;
 use App\Lib\DatabaseConnection;
 use App\Model\CategoryRepository;
-use App\Model\Entity\Category;
-use App\Model\GameRepository;
+use App\Model\InformationRepository;
 
 class CategoryController
 {
@@ -17,6 +19,11 @@ class CategoryController
         $database = new DatabaseConnection;
         $categoryRepository->connection = $database;
         $gameRepository->connection = $database;
+        $informationRepository->connection = $database;
+
+        $date = new DateTime($informationRepository->getDeadLine());
+
+        $phase = $informationRepository->getPhase();
 
         // calcul du nombre de page de catégorie
         $nbCategoriesByPage = 4;
@@ -42,6 +49,11 @@ class CategoryController
         $database = new DatabaseConnection;
         $categoryRepository->connection = $database;
         $gameRepository->connection = $database;
+        $informationRepository = new InformationRepository();
+        $informationRepository->connection = $database;
+
+        $phase = $informationRepository->getPhase();
+        $date = new DateTime($informationRepository->getDeadLine());
 
         // test du get
         if (empty($_GET['name'])) {

@@ -7,17 +7,23 @@
   echo "<h2> Pas connecté </h2>";
 }
 ?>
+<?php if ($phase == 1) { ?>
 
+  <div>
+    <h2> La date limite pour émettre des voeux est le <?= $date->format('d-m-Y') ?> </h2>
+  </div>
+<?php
+} ?>
 <div class="row">
   <?php foreach ($games as $i => $game) { ?>
     <div class="card m-3" style="width: 18rem;">
       <a class="text-decoration-none text-reset" href="<?= SITE ?>/game/<?= $game->slug ?>">
-        <img src="<?= URL."Images/" . $game->image ?>" class=" card-img-top flex-shrink-0" alt="<?= $game->name ?>">
+        <img src="<?= URL . "Images/" . $game->image ?>" class=" card-img-top flex-shrink-0" alt="<?= $game->name ?>">
         <div class="card-body">
           <h5 class="card-title"><?= $game->name ?></h5>
           <hr>
           <span class="badge bg-primary mb-2">
-              <?= $game->category->name ?>      
+            <?= $game->category->name ?>
           </span>
         </div>
       </a>
