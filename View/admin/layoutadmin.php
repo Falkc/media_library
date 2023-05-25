@@ -28,6 +28,9 @@
                         <li class="nav-item">
                             <a class="nav-link" href="<?= SITE ?>/admin/showwishes">Voir les voeux</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?= SITE ?>/admin/showHistory">Historique</a>
+                        </li>
                         <?php if (isset($date)) { ?>
                             <li class="nav-item">
                                 <a class="nav-link" href="<?= SITE ?>/admin/updateDeadLine"><?= $date->format('Y-m-d') ?></a>
@@ -59,6 +62,9 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="<?= SITE ?>/admin/game/add/">Ajouter un jeu</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?= SITE ?>/admin/showHistory">Historique</a>
                         </li>
 
                         <li class="nav-item">

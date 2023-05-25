@@ -11,6 +11,7 @@ use App\Model\UserRepository;
 use App\Lib\DatabaseConnection;
 use App\Model\WishesRepository;
 use App\Model\CategoryRepository;
+use App\Model\HistoryRepository;
 use App\Model\InformationRepository;
 
 class AdminController
@@ -275,9 +276,16 @@ class AdminController
             header("Location: " . SITE);
         } else {
             $phase = managePhase(1);
+            $wishesRepository = new WishesRepository();
             $informationRepository = new InformationRepository();
+            $historyRepository = new HistoryRepository();
             $database = new DatabaseConnection();
             $informationRepository->connection = $database;
+            $wishesRepository->connection = $database;
+            $historyRepository->connection = $database;
+
+            $historyRepository->addToHistory();
+            $wishesRepository->deleteAllFromWishes();
 
             $informationRepository->modifyPhase(2);
             $informationRepository->modifyAttribution(1);
@@ -294,8 +302,10 @@ class AdminController
             $now = new DateTime('now');
             if (isset($_POST['date'])) {
                 $informationRepository = new InformationRepository();
+                $wishesRepository = new WishesRepository();
                 $database = new DatabaseConnection();
                 $informationRepository->connection = $database;
+                $wishesRepository->connection = $database;
 
                 $date = new DateTime($_POST['date']);
                 if ($date > $now && $date->format('Y-m-d') != $now->format('Y-m-d')) {
@@ -308,7 +318,7 @@ class AdminController
             } else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $errorMsg = 'Vous devez sélectionner une date correcte.';
             }
-            require('view/admin/passToPhase1.php');
+            require('View/admin/passToPhase1.php');
         }
     }
     public function updateDeadLine()
@@ -326,20 +336,38 @@ class AdminController
                 $date = new DateTime($_POST['date']);
                 if ($date > $now && $date->format('Y-m-d') != $now->format('Y-m-d')) {
                     $informationRepository->modifyDate($date);
-                    $successMsg = 'Vous venez de passer à la phase de voeux.';
+                    $successMsg = 'La date a bien été modifiée.';
                 } else {
                     $errorMsg = 'Vous devez sélectionner une date correcte.';
                 }
             } else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $errorMsg = 'Vous devez sélectionner une date correcte.';
             }
-            require('view/admin/updateDeadLine.php');
+            require('View/admin/updateDeadLine.php');
         }
     }
-    private function checkWishAdding()
+    public function showHistory()
     {
         $informationRepository = new InformationRepository();
+        $historyRepository = new HistoryRepository();
         $database = new DatabaseConnection();
         $informationRepository->connection = $database;
+        $historyRepository->connection = $database;
+
+        $phase = $informationRepository->getPhase();
+        $date = new DateTime($informationRepository->getDeadLine());
+
+        $dates = $historyRepository->getDates();
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $date_string = new DateTime($_POST['date']);
+            $history = $historyRepository->getHistory($date_string);
+        } else {
+            if (isset($dates[0])) {
+                $history = $historyRepository->getHistory($dates[0]);
+            } else {
+                $errorMsg = "Aucune attribution n'a encore été faite";
+            }
+        }
+        require('View/admin/history.php');
     }
 }
