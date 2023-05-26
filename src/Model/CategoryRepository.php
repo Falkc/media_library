@@ -71,6 +71,24 @@ class CategoryRepository
             return $category;
         }
     }
+    // public function getCategoryById($id)
+    // {
+    //     $statement = $this->connection->getConnection()->prepare(
+    //         "SELECT name,slug FROM category WHERE id=?"
+    //     );
+    //     $statement->execute([$id]);
+    //     $row =  $statement->fetch();
+    //     if (empty($row)) {
+    //         return null;
+    //     } else {
+    //         $category = new Category();
+    //         $category->id = $id;
+    //         $category->name = $row['name'];
+    //         $category->slug = $row['slug'];
+
+    //         return $category;
+    //     }
+    // }
     public function checkcategory($category_name)
     {
         $statement = $this->connection->getConnection()->prepare(
@@ -94,6 +112,19 @@ class CategoryRepository
 
         $insert = $this->connection->getConnection()->prepare(
             "INSERT INTO category_game(category_id, game_id) VALUES(:category_id, :game_id)"
+        );
+        $insert->execute([
+            'category_id' => $category_id,
+            'game_id' => $game_id,
+        ]);
+    }
+    public function modifyGameCategory($category_id, $game_id)
+    {
+
+        $insert = $this->connection->getConnection()->prepare(
+            "UPDATE category_game
+            SET category_id = :category_id
+            WHERE game_id = :game_id"
         );
         $insert->execute([
             'category_id' => $category_id,

@@ -1,4 +1,4 @@
-<?php $title = "Médiathèque - Attribution"; ?>
+<?php $title = "Ludocrèche - Attribution"; ?>
 <?php ob_start(); ?>
 
 <?php if (isset($errorMsg)) {

@@ -1,4 +1,4 @@
-<?php $title = "Médiathèque - Voir les voeux"; ?>
+<?php $title = "Ludocrèche - Voir les voeux"; ?>
 <?php ob_start(); ?>
 
 <?php if (isset($errorMsg)) {

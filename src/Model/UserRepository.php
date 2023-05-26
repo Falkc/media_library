@@ -44,7 +44,6 @@ class UserRepository
 
         if ($check->rowCount() == 0) return "E-mail incorrect";
 
-        $password = hash('sha256', $password); // code le mot de passe
         $row =  $check->fetch();
 
         if ($password !== $row['password']) return "Mot de passe incorrect";
@@ -66,40 +65,27 @@ class UserRepository
         return true;
     }
 
-    public function registerAndLogin(string $last_name, string $first_name, string $email, string $password): void
+    public function register(string $last_name, string $first_name, string $email, string $password, string $admin): bool
     {
 
         $last_name = htmlspecialchars($last_name);
         $first_name = htmlspecialchars($first_name);
         $email = htmlspecialchars($email);
         $password = htmlspecialchars($password);
-
-        $password = hash('sha256', $password);
+        $admin = htmlspecialchars($admin);
 
         $insert = $this->connection->getConnection()->prepare(
-            "INSERT INTO users(email, password, first_name, last_name) VALUES(:email, :password, :first_name, :last_name)"
+            "INSERT INTO users(email, password, first_name, last_name, admin) VALUES(:email, :password, :first_name, :last_name, :admin)"
         );
         $insert->execute([
             'email' => $email,
             'password' => $password,
             'first_name' => $first_name,
             'last_name' => $last_name,
+            'admin' => $admin,
         ]);
 
-        $statement = $this->connection->getConnection()->prepare(
-            "SELECT id, registration_date FROM users WHERE email=?"
-        );
-        $statement->execute([$email]);
-        $row = $statement->fetch();
-
-        $this->logUser([
-            'id' => $row['id'],
-            'email' => $email,
-            'first_name' => $first_name,
-            'last_name' => $last_name,
-            'registration_date' => $row['registration_date'],
-            'admin' => 0
-        ]);
+        return true;
     }
 
     private function logUser(array $data): void
@@ -110,5 +96,73 @@ class UserRepository
         $_SESSION['email'] = $data['email'];
         $_SESSION['registration_date'] = $data['registration_date'];
         $_SESSION['admin'] = $data['admin'];
+    }
+
+    public function getAllUsers(): array
+    {
+
+        $statement = $this->connection->getConnection()->query(
+            "SELECT * FROM users ORDER BY last_name ASC"
+        );
+        $users = [];
+        while (($row = $statement->fetch())) {
+            $user = new User();
+            $user->id = $row['id'];
+            $user->email = $row['email'];
+            $user->password = $row['password'];
+            $user->first_name = $row['first_name'];
+            $user->last_name = $row['last_name'];
+            $user->registration_date = new \DateTime($row['registration_date']);
+            $user->admin = $row['admin'];
+
+            $users[] = $user;
+        }
+        return $users;
+    }
+
+    public function getUserById(string $user_id): User
+    {
+
+        $statement = $this->connection->getConnection()->prepare(
+            "SELECT * FROM users WHERE id=?"
+        );
+        $statement->execute([$user_id]);
+        $row = $statement->fetch();
+        $user = new User();
+        $user->id = $row['id'];
+        $user->email = $row['email'];
+        $user->password = $row['password'];
+        $user->first_name = $row['first_name'];
+        $user->last_name = $row['last_name'];
+        $user->registration_date = new \DateTime($row['registration_date']);
+        $user->admin = $row['admin'];
+        
+        return $user;
+    }
+
+    public function modifyUserById(string $id, string $email, string $password, string $first_name, string $last_name, string $admin): bool
+    {
+        $id = htmlspecialchars($id);
+        $email = htmlspecialchars($email);
+        $password = htmlspecialchars($password);
+        $first_name = htmlspecialchars($first_name);
+        $last_name = htmlspecialchars($last_name);
+        $admin = htmlspecialchars($admin);
+        $update = $this->connection->getConnection()->prepare(
+            "UPDATE users
+            SET email = :email, password = :password, first_name = :first_name, last_name = :last_name, admin = :admin
+            WHERE id = :id"
+        );
+        $update->execute([
+            'id' => $id,
+            'email' => $email,
+            'password' => $password,
+            'first_name' => $first_name,
+            'last_name' => $last_name,
+            'admin' => $admin
+
+        ]);
+
+        return true;
     }
 }

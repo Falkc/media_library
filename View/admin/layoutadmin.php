@@ -11,9 +11,9 @@
 
 <body>
     <?php if ($phase == 1) { ?>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-danger">
             <div class="container-fluid">
-                <a class="navbar-brand" href="<?= SITE ?>">Médiathèque</a>
+                <a class="navbar-brand" href="<?= SITE ?>">Ludocrèche</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -26,25 +26,25 @@
                             <a class="nav-link" href="<?= SITE ?>/admin/game/add/">Ajouter un jeu</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="<?= SITE ?>/admin/showwishes">voir les voeux</a>
+                            <a class="nav-link" href="<?= SITE ?>/admin/showwishes">Voir les voeux</a>
                         </li>
-
                         <li class="nav-item">
-                            <a class="nav-link" href=" http://www.association-galipette.org/site/">Association Galipette</a>
+                          <a class="nav-link" href="<?= SITE ?>/admin/members/show">Voir les membres</a>
                         </li>
+                        <?php if (isset($date)) { ?>
+                            <li class="nav-item">
+                                <a class="nav-link" href="<?= SITE ?>/admin/updateDeadLine"><?= $date->format('Y-m-d') ?></a>
+                            </li>
+                        <?php } ?>
                     </ul>
-                    <?php if (isset($_SESSION['id'])) { ?>
-                        <a href="<?= SITE ?>/logout"><button class="btn btn-secondary my-2 my-sm-0">Se déconnecter</button></a>
-                    <?php } else { ?>
-                        <a href="<?= SITE ?>/register"><button class="btn btn-secondary my-2 my-sm-0 mx-3">Créer un compte</button></a>
-                        <a href="<?= SITE ?>/login"><button class="btn btn-secondary my-2 my-sm-0">Se connecter</button></a>
-                    <?php } ?>
+                    <a href="<?= SITE ?>/register"><button class="btn btn-light my-2 my-sm-0 mx-3">Créer un compte</button></a>
+                    <a href="<?= SITE ?>/logout"><button class="btn btn-light my-2 my-sm-0">Se déconnecter</button></a>
                 </div>
             </div>
         </nav>
     <?php } else if ($phase == 2) { ?>
 
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-danger">
             <div class="container-fluid">
                 <a class="navbar-brand" href="<?= SITE ?>">Médiathèque</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
@@ -58,21 +58,15 @@
                         <li class="nav-item">
                             <a class="nav-link" href="<?= SITE ?>/admin/game/add/">Ajouter un jeu</a>
                         </li>
-
+                        <li class="nav-item">
+                          <a class="nav-link" href="<?= SITE ?>/admin/members/show">Voir les membres</a>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link" href="<?= SITE ?>/admin/passToPhase1">Passer à la phase de voeux</a>
                         </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link" href=" http://www.association-galipette.org/site/">Association Galipette</a>
-                        </li>
                     </ul>
-                    <?php if (isset($_SESSION['id'])) { ?>
-                        <a href="<?= SITE ?>/logout"><button class="btn btn-secondary my-2 my-sm-0">Se déconnecter</button></a>
-                    <?php } else { ?>
-                        <a href="<?= SITE ?>/register"><button class="btn btn-secondary my-2 my-sm-0 mx-3">Créer un compte</button></a>
-                        <a href="<?= SITE ?>/login"><button class="btn btn-secondary my-2 my-sm-0">Se connecter</button></a>
-                    <?php } ?>
+                    <a href="<?= SITE ?>/register"><button class="btn btn-light my-2 my-sm-0 mx-3">Créer un compte</button></a>
+                    <a href="<?= SITE ?>/logout"><button class="btn btn-light my-2 my-sm-0">Se déconnecter</button></a>
                 </div>
             </div>
         </nav>

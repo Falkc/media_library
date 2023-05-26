@@ -1,4 +1,4 @@
-<?php $title = "Ludocrèche - Voeux"; ?>
+<?php $title = "Ludocrèche - Mes jeux"; ?>
 
 <?php ob_start(); ?>
 
@@ -22,13 +22,8 @@
                             </span>
                         </a>
                     </p>
-                    <h5>Nombre d'exemplaires :</h5>
-                    <p> <?= $game->nb_copies ?> </p>
                     <h5>Description du jeu :</h5>
                     <p> <?= $game->description ?> </p>
-                </div>
-                <div class="col-md-3 d-flex justify-content-center align-items-center">
-                    <a href='<?= SITE ?>/deletewishesandredirect/<?= $game->slug ?>/1'> <button type="button" class="btn btn-lg btn-primary">Supprimer de mes voeux</button></a>
                 </div>
             </div>
         </div>

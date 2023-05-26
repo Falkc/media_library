@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use DateTime;
-use DateTimeZone;
+use App\Model\Entity\Game;
 use App\Model\Entity\Wish;
 use App\Model\Entity\Idtable;
 use App\Model\GameRepository;
@@ -11,6 +11,7 @@ use App\Model\UserRepository;
 use App\Lib\DatabaseConnection;
 use App\Model\WishesRepository;
 use App\Model\CategoryRepository;
+use App\Model\Entity\Category;
 use App\Model\InformationRepository;
 
 class AdminController
@@ -20,22 +21,27 @@ class AdminController
         if ($_SESSION['admin'] != 1) {
             header("Location:" . SITE);
         } else {
+            
+            $informationRepository = new InformationRepository();
+            $database = new DatabaseConnection();
+            $informationRepository->connection = $database;
+            $phase = $informationRepository->getPhase();
+            $date = new DateTime($informationRepository->getDeadLine());
+            
             if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-                $informationRepository = new InformationRepository();
+
                 $gameRepository = new GameRepository();
                 $categoryRepository = new CategoryRepository;
-                $database = new DatabaseConnection();
+
                 $gameRepository->connection = $database;
                 $categoryRepository->connection = $database;
-                $informationRepository->connection = $database;
-
-                $phase = $informationRepository->getPhase();
 
                 if (empty($_POST['name']) || empty($_POST['category']) || empty($_POST['nb_copies'])) {
 
                     $errorMsg = "Veuillez remplir tout les champs";
                 } else {
 
+                    $_POST['name']=trim($_POST['name']);
                     $errorMsg = $this->checkNewGameInfo($_POST['name'], $_POST['nb_copies']);
 
                     if (!empty($errorMsg)) {;
@@ -46,7 +52,9 @@ class AdminController
                             $errorMsg = "Nom de jeu déjà existant";
                         } else {
                             $uploadfile = 'Images/' . basename($_FILES['image']['name']);
-                            $isUploadedFile=move_uploaded_file($_FILES['image']['tmp_name'], $uploadfile);
+
+                            $isUploadedFile = move_uploaded_file($_FILES['image']['tmp_name'], $uploadfile);
+
                             if (!$isUploadedFile) {
                                 $errorMsg = "L'image n'a pas pu être téléchargée";
                             } else {
@@ -64,20 +72,117 @@ class AdminController
                                 $categoryRepository->addcategorytogame($category->id, $game->id);
                                 $successMsg = "Le jeu a bien été ajouté";
                             }
-                        }
+                        }   
                     }
-                }
+                }   
             } else {
                 $categoryRepository = new CategoryRepository;
-                $informationRepository = new InformationRepository();
                 $database = new DatabaseConnection();
-                $informationRepository->connection = $database;
                 $categoryRepository->connection = $database;
-                $phase = $informationRepository->getPhase();
             }
             $categories = $categoryRepository->getCategories();
 
             require('View/admin/addGame.php');
+        }
+    }
+    public function modifyGame()
+    {
+        if ($_SESSION['admin'] != 1) {
+            header("Location:" . SITE);
+        } else {
+
+            $informationRepository = new InformationRepository();
+            $database = new DatabaseConnection();
+            $informationRepository->connection = $database;
+            $phase = $informationRepository->getPhase();
+            $date = new DateTime($informationRepository->getDeadLine());
+
+            if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+
+                $categoryRepository = new CategoryRepository;
+                $gameRepository = new GameRepository();
+                $categoryRepository->connection = $database;
+                $gameRepository->connection = $database;
+
+                
+                $phase = $informationRepository->getPhase();
+                $game = $gameRepository->getGameById($_GET['game_id']);
+                $game->category = $categoryRepository->getGameCategoryById($game->id);
+
+                if (empty($_POST['name']) || empty($_POST['category']) || empty($_POST['nb_copies'])) {
+
+                    $errorMsg = "Veuillez remplir tout les champs";
+                } else {
+
+                    $_POST['name']=trim($_POST['name']);
+                    $errorMsg = $this->checkNewGameInfo($_POST['name'], $_POST['nb_copies']);
+
+                    if (!empty($errorMsg)) {;
+                    } else {
+
+                        if ($_POST['name'] != $game->name && !$gameRepository->checkNewGame($_POST['name'])) {
+
+                            $errorMsg = "Nom de jeu déjà existant";
+                        } else {
+                            if(!empty($_FILES['image']['name'])){
+                                $image=$_FILES['image']['name'];
+                                $uploadfile = 'Images/' . basename($image);
+                                $isUploadedFile=move_uploaded_file($_FILES['image']['tmp_name'], $uploadfile);
+                                if($isUploadedFile){
+                                    //Delete fonctionne pas
+                                    // $deletefile = 'Images/' . basename($game->image);
+                                    // if(file_exists($deletefile)){
+                                    //     $command = "del " . $deletefile;
+                                    //     shell_exec($command);
+                                    // }
+                                }else{
+                                    $errorMsg = "L'image n'a pas pu être téléchargée";
+                                }
+                            }else{
+                                $image = $game->image;
+                            }
+                            if (!empty($errorMsg)) {;
+                            } else {
+                                $slug = slugify($_POST['name']);
+                                $gameRepository->modifyGameById(
+                                    $_GET['game_id'],
+                                    $_POST['name'],
+                                    $slug,
+                                    $_POST['description'],
+                                    $_POST['nb_copies'],
+                                    $image
+                                );
+
+                                $category = $categoryRepository->checkcategory($_POST['category']);
+                                if($category->id != $game->category->id){
+                                $categoryRepository->modifyGameCategory($category->id, $game->id);
+                                $game->category=$category;
+                                }
+                                $successMsg = "Le jeu a bien été modifié";
+
+                                $game->name=$_POST['name'];
+                                $game->slug=$slug;
+                                $game->description=$_POST['description'];
+                                $game->nb_copies=$_POST['nb_copies'];
+                                $game->image=$image;
+
+                                
+                            }
+                        }   
+                    }
+                }   
+            } else {
+                $categoryRepository = new CategoryRepository;
+                $gameRepository = new GameRepository();
+                $categoryRepository->connection = $database;
+                $gameRepository->connection = $database;
+
+                $game = $gameRepository->getGameById($_GET['game_id']);
+                $game->category = $categoryRepository->getGameCategoryById($game->id);
+            }
+            $categories = $categoryRepository->getCategories();
+
+            require('View/admin/modifyGame.php');
         }
     }
     private function checkNewGameInfo(string $name, string $nb_copies)
@@ -93,14 +198,14 @@ class AdminController
     public function deleteGame()
     {
         if ($_SESSION['admin'] != 1) {
-            header("Location: /media_library ");
+            header("Location:" . SITE);
         } else {
             $gameRepository = new GameRepository();
             $database = new DatabaseConnection();
             $gameRepository->connection = $database;
 
             $game = $gameRepository->deleteGame($_GET['game_id']);
-            header("Location: /media_library ");
+            header("Location:" . SITE);
         }
     }
     public function showwishes()
@@ -110,10 +215,12 @@ class AdminController
         } else {
             $phase = managePhase(1);
 
+            $informationRepository = new InformationRepository();
             $gameRepository = new GameRepository();
             $wishesRepository = new WishesRepository();
             $userRepositary = new UserRepository();
             $database = new DatabaseConnection();
+            $informationRepository->connection = $database;
             $gameRepository->connection = $database;
             $wishesRepository->connection = $database;
             $userRepositary->connection = $database;
@@ -121,6 +228,7 @@ class AdminController
             $informations = $wishesRepository->getwishesforadmin();
             $game_names = $wishesRepository->getDistinctGamesFromWishes();
 
+            $date = new DateTime($informationRepository->getDeadLine());
             $allUsers = $userRepositary->getUsers();
             $allGames = $gameRepository->getGames();
             if (empty($informations)) {
@@ -171,11 +279,15 @@ class AdminController
             header("Location: " . SITE);
         } else {
             $phase = managePhase(1);
+            $informationRepository = new InformationRepository();
             $gameRepository = new GameRepository();
-            $wishesRepository = new WishesRepository;
+            $wishesRepository = new WishesRepository();
             $database = new DatabaseConnection();
+            $informationRepository->connection = $database;
             $gameRepository->connection = $database;
             $wishesRepository->connection = $database;
+
+            $date = new DateTime($informationRepository->getDeadLine());
 
             //nb jeux
 
@@ -233,12 +345,9 @@ class AdminController
                 }
             }
             require('script_solver.php');
-            for ($i = 1; $i <= $njeux * $g; $i++) {
-                $attribution[$i - 1] = $attribution[$i];
-            }
 
             $wishesRepository->deletePastAttribution();
-            for ($i = 0; $i < $njeux * $g; $i++) {
+            for ($i = 0; $i < $gamenb * $usernb; $i++) {
                 if ($attribution[$i] == 1) {
                     $wishesRepository->fillAttributionTable($gameswishedAndUsers[floor($i / $gamenb)]->user_id, $games_id[$i % $gamenb]);
                 }
@@ -295,13 +404,142 @@ class AdminController
                     $informationRepository->modifyDate($date);
                     $informationRepository->modifyPhase(1);
                     $successMsg = 'Vous venez de passer à la phase de voeux.';
+                    $phase=1;
                 } else {
                     $errorMsg = 'Vous devez sélectionner une date correcte.';
                 }
             } else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $errorMsg = 'Vous devez sélectionner une date correcte.';
             }
-            require('view/admin/passToPhase1.php');
+            require('View/admin/passToPhase1.php');
         }
+    }
+    public function showMembers()
+    {
+        if ($_SESSION['admin'] != 1) {
+            header("Location:" .  SITE);
+        } else {
+            $informationRepository = new InformationRepository();
+            $database = new DatabaseConnection();
+            $userRepository = new UserRepository();
+            $database = new DatabaseConnection();
+            $informationRepository->connection = $database;
+            $userRepository->connection = $database;
+
+            $phase = $informationRepository->getPhase();
+            $date = new DateTime($informationRepository->getDeadLine());
+            $allUsers = $userRepository->getAllUsers();
+            $adminUsers=[];
+            $noAdminUsers=[];
+            foreach($allUsers as $user){
+                if($user->admin=="1"){
+                    $adminUsers[]=$user;
+                }else{
+                    $noAdminUsers[]=$user;
+                }
+            }
+
+            require('View/admin/showMembers.php');
+        }
+    }
+
+    public function modifyUser(){
+
+        if ($_SESSION['admin'] != 1) {
+            header("Location:" . SITE);
+        } else {
+            $informationRepository = new InformationRepository();
+            $userRepository = new UserRepository();
+            $database = new DatabaseConnection();
+            $informationRepository->connection = $database;
+            $userRepository->connection = $database;
+
+            $user=$userRepository->getUserById($_GET['user_id']);
+            $phase = $informationRepository->getPhase();
+            $date = new DateTime($informationRepository->getDeadLine());
+
+            if($_SERVER['REQUEST_METHOD'] == 'POST'){
+
+                if (empty($_POST['last_name']) || empty($_POST['first_name']) || empty($_POST['email']) ||
+                    empty($_POST['password'])){
+
+                    $errorMsg = "Veuillez remplir tout les champs";
+
+                }else{
+
+                    $errorMsg = $this->checkRegistrationInfo($_POST['last_name'],$_POST['first_name'],$_POST['email']);
+
+                    if(!empty($errorMsg)){
+                        ;
+                    }else{
+
+                        if($_POST['email']!= $user->email && !$userRepository->checkRegistrationEmail($_POST['email'])){
+
+                            $errorMsg = "E-mail déjà utilisé";
+
+                        }else{
+
+                            if($_POST['admin']==="Oui"){
+                                $admin="1";
+                            }else{
+                                $admin="0";
+                            }
+
+                            if($userRepository->modifyUserById(
+                                $_GET['user_id'], $_POST['email'], $_POST['password'], $_POST['first_name'], $_POST['last_name'], $admin
+                            )){
+                                $successMsg = "Le compte a bien été modifié";
+                                $user->email=$_POST['email'];
+                                $user->password=$_POST['password'];
+                                $user->first_name=$_POST['first_name'];
+                                $user->last_name=$_POST['last_name'];
+                                $user->admin=$admin;
+                            }
+                        }
+                    }
+                }
+            }
+
+            require('View/admin/modifyUser.php');
+        }
+    }
+  
+    private function checkRegistrationInfo(string $last_name, string $first_name, string $email){
+        if(strlen($last_name) > 255) return "Votre nom de famille est trop long";
+        if(strlen($first_name) > 255) return "Votre prénom est trop long";
+        if(!filter_var($email, FILTER_VALIDATE_EMAIL)) return "Votre e-mail n'est pas valide";
+        if(strlen($email) > 255) return "Votre e-mail est trop long";
+        return "";
+    }
+    public function updateDeadLine()
+    {
+        if ($_SESSION['admin'] != 1) {
+            header("Location: " . SITE);
+        } else {
+            $informationRepository = new InformationRepository();
+            $database = new DatabaseConnection();
+            $informationRepository->connection = $database;
+
+            $phase = managePhase(1);
+            $now = new DateTime('now');
+            if (isset($_POST['date'])) {
+                $date = new DateTime($_POST['date']);
+                if ($date > $now && $date->format('Y-m-d') != $now->format('Y-m-d')) {
+                    $informationRepository->modifyDate($date);
+                    $successMsg = 'La date a bien été modifiée.';
+                } else {
+                    $errorMsg = 'Vous devez sélectionner une date correcte.';
+                }
+            } else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                $errorMsg = 'Vous devez sélectionner une date correcte.';
+            }
+            require('View/admin/updateDeadLine.php');
+        }
+    }
+    private function checkWishAdding()
+    {
+        $informationRepository = new InformationRepository();
+        $database = new DatabaseConnection();
+        $informationRepository->connection = $database;
     }
 }

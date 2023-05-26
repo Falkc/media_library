@@ -1,4 +1,4 @@
-<?php $title = "Médiathèque - Catégories"; ?>
+<?php $title = "Ludocrèche - Catégories"; ?>
 <?php ob_start(); ?>
 
 <?php if (isset($errorMsg)) {

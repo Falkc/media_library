@@ -1,4 +1,4 @@
-<?php $title = "Médiathèque - Se connecter"; ?>
+<?php $title = "Ludocrèche - Se connecter"; ?>
 
 <?php ob_start(); ?>
 <div class="w-50 mx-auto">

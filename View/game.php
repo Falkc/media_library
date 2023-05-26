@@ -1,4 +1,4 @@
-<?php $title = "Médiathèque - Jeu"; ?>
+<?php $title = "Ludocrèche - ".$game->category->name; ?>
 
 <?php ob_start(); ?>
 
@@ -6,10 +6,17 @@
     echo "<h2>" . $errorMsg . "</h2>";
 } else { ?>
 
+
+
     <div class="container my-5">
+        <?php if (isset($_SESSION['wishError'])) { ?>
+            <div class="alert alert-danger" role="alert">
+                <?= $_SESSION['wishError'] ?>
+            </div>
+        <?php } ?>
         <div class="row">
             <div class="col-md-3">
-                <img src="<?= URL . "Images/" . $game->image ?>" class=" card-img-top flex-shrink-0" alt="<?= "Images/" . $game->image ?>">
+                <img src="<?= URL . "Images/" . $game->image ?>" class=" card-img-top flex-shrink-0" alt="<?= $game->name ?>">
             </div>
             <div class="col-md-6">
                 <h1> <?= $game->name ?> </h1>
@@ -20,6 +27,8 @@
                         </span>
                     </a>
                 </p>
+                <h5>Nombre d'exemplaires :</h5>
+                <p> <?= $game->nb_copies ?> </p>
                 <h5>Description du jeu :</h5>
                 <p> <?= $game->description ?> </p>
             </div>

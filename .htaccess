@@ -11,16 +11,17 @@ RewriteRule ^addwishes(/(.*))?$ index.php?p=wishes/addwish&game_slug=$2
 RewriteRule ^deletewishesandredirect(/([^/]*))?(/(.*))?$ index.php?p=wishes/deletewishandredirect&game_slug=$2&redirect=$4
 RewriteRule ^showwishes/?$ index.php?p=wishes/showwishes
 RewriteRule ^admin/game/add/?$ index.php?p=admin/game/add
-RewriteRule ^admin/game/delete(/(\d*))?$ index.php?p=admin/game/delete&game_id=$2
-
+RewriteRule ^admin/game/delete/(\d*)/?$ index.php?p=admin/game/delete&game_id=$1
+RewriteRule ^admin/game/modify/(\d*)/?$ index.php?p=admin/game/modify&game_id=$1
+RewriteRule ^admin/members/show/?$ index.php?p=admin/members/show
+RewriteRule ^admin/user/modify/(\d*)/?$ index.php?p=admin/user/modify&user_id=$1
+RewriteRule ^admin/showwishes(/(\d*))?$ index.php?p=admin/showwishes&pos=$2
+RewriteRule ^admin/passToPhase1/?$ index.php?p=admin/passToPhase1
+RewriteRule ^admin/updateDeadLine/?$ index.php?p=admin/updateDeadLine
+RewriteRule ^showAttribution/?$ index.php?p=wishes/showAttribution
 RewriteRule ^admin/cancelAttribution/?$ index.php?p=admin/cancelAttribution
 RewriteRule ^admin/acceptAttribution/?$ index.php?p=admin/acceptAttribution
-
-RewriteRule ^admin/showwishes(/(\d*))?$ index.php?p=admin/showwishes&pos=$2
-RewriteRule ^admin/attribution/?$ index.php?p=admin/attribution
-
-RewriteRule ^admin/passToPhase1/?$ index.php?p=admin/passToPhase1
-
+RewriteRule ^admin/attribution?$ index.php?p=admin/attribution
 # RewriteRule ^(.+)$ index.php?p=$1
 # ^ début expression régulière, $ fin , $1 récupère la première expression en parenthèse
 # /catégorie page de base, /catégorie/nomcatégorie page spécifique

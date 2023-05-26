@@ -1,4 +1,4 @@
-<?php $title = "Médiathèque - " . ucfirst($category->name); ?>
+<?php $title = "Ludocrèche - " . ucfirst($category->name); ?>
 <?php ob_start(); ?>
 
 <?php if (isset($errorMsg)) {

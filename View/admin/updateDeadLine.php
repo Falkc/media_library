@@ -1,8 +1,8 @@
-<?php $title = "Ludocrèche - Passer à la phase des voeux"; ?>
+<?php $title = "Ludocrèche - Modifier la date limite"; ?>
 
 <?php ob_start(); ?>
 <div class="w-50 mx-auto">
-    <h2 class="my-3 text-center">Sélectionner la date limite pour émettre des voeux</h2>
+    <h2 class="my-3 text-center">Sélectionner la nouvelle date limite pour émettre des voeux:</h2>
 
     <?php if (!empty($errorMsg)) { ?>
         <div class="alert alert-danger" role="alert">
@@ -19,7 +19,7 @@
         <div class="form-group my-3">
             <input type="date" name="date">
         </div>
-        <button type="submit" class="btn btn-primary my-1">Passer à la phase de formulation des voeux</button>
+        <button type="submit" class="btn btn-primary my-1">Valider la nouvelle date</button>
     </form>
 </div>
 
