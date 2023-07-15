@@ -57,6 +57,10 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="<?= SITE ?>/showAttribution">Mes jeux</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="<?= SITE ?>/showFreeBorrowDemands">Mes emprunts libres</a>
+                            </li>
+
                         <?php } ?>
                         <li class="nav-item">
                             <a class="nav-link" href=" http://www.association-galipette.org/site/" target="_blank">Association Galipette</a>

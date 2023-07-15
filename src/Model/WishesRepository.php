@@ -278,4 +278,42 @@ class WishesRepository
             'TRUNCATE TABLE wishes'
         );
     }
+    public function getNbCopiesAttributed()
+    {
+        $statement = $this->connection->getConnection()->query(
+            "SELECT game_id, COUNT(*) as count FROM attribution GROUP BY game_id"
+        );
+        $gamesAttributed = [];
+        while (($row = $statement->fetch())) {
+            $games['id'] = $row['game_id'];
+            $games['nbAttributed'] = $row['count'];
+            $gamesAttributed[] = $games;
+        }
+        return $gamesAttributed;
+    }
+    public function getNbCopies()
+    {
+        $statement = $this->connection->getConnection()->query(
+            "SELECT id, nb_copies FROM games ORDER BY id ASC"
+        );
+        $nbCopies = [];
+        while (($row = $statement->fetch())) {
+            $games['id'] = $row['id'];
+            $games['nbCopies'] = $row['nb_copies'];
+            $nbCopies[] = $games;
+        }
+        return $nbCopies;
+    }
+    public function updateNbCopiesLeft(array $nbCopiesLeft)
+    {
+        $statement = $this->connection->getConnection()->prepare(
+            "UPDATE games SET nb_copies_left = :nb_copies WHERE id = :game_id"
+        );
+        foreach ($nbCopiesLeft as $nbCopies) {
+            $statement->execute([
+                'nb_copies' => $nbCopies['nbCopies'],
+                'game_id' => $nbCopies['id'],
+            ]);
+        }
+    }
 }

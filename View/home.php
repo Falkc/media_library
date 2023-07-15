@@ -6,6 +6,9 @@
 } else {
   echo "<h2> Pas connecté </h2>";
 }
+if (isset($errMsg)) {
+  echo "<h1>" . $errMsg . "</h1>";
+}
 ?>
 <?php if ($phase == 1) { ?>
 

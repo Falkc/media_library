@@ -182,4 +182,30 @@ class GameRepository
         }
         return $games;
     }
+    public function getAvailableGamesNb()
+    {
+        $statement = $this->connection->getConnection()->query(
+            'SELECT COUNT(id) AS nb FROM games WHERE nb_copies_left>0'
+        );
+        return $statement->fetch()['nb'];
+    }
+    public function getSomeAvailableGames(int $offset, int $number): array
+    {
+
+        $statement = $this->connection->getConnection()->query(
+            "SELECT * FROM games WHERE nb_copies_left>0 ORDER BY name LIMIT $offset, $number "
+        );
+        $games = [];
+        while (($row = $statement->fetch())) {
+            $game = new Game();
+            $game->id = $row['id'];
+            $game->name = $row['name'];
+            $game->slug = $row['slug'];
+            $game->description = $row['description'];
+            $game->image = $row['image'];
+
+            $games[] = $game;
+        }
+        return $games;
+    }
 }

@@ -7,6 +7,7 @@ use App\Model\GameRepository;
 use App\Lib\DatabaseConnection;
 use App\Model\WishesRepository;
 use App\Model\CategoryRepository;
+use App\Model\FreeBorrowRepository;
 use App\Model\InformationRepository;
 
 class GameController
@@ -16,12 +17,14 @@ class GameController
         $categoryRepository = new CategoryRepository();
         $wishRepository = new WishesRepository();
         $gameRepository = new GameRepository();
+        $freeBorrowRepository = new FreeBorrowRepository();
         $informationRepository = new InformationRepository();
         $database = new DatabaseConnection();
         $categoryRepository->connection = $database;
         $wishRepository->connection = $database;
         $gameRepository->connection = $database;
         $informationRepository->connection = $database;
+        $freeBorrowRepository->connection = $database;
 
         $date = new DateTime($informationRepository->getDeadLine());
 
@@ -45,10 +48,13 @@ class GameController
         if (!isset($game)) {
             $errorMsg = "Aucun jeu trouvé";
         }
-        if (isset($_SESSION['id'])) {
+        if (isset($_SESSION['id']) and $phase == 1) {
             $checkwish = $wishRepository->checkWish($_SESSION['id'], $game->id);
-        } else {
+        } else if (!isset($_SESSION['id'])) {
             $checkwish = 0;
+        }
+        if (isset($_SESSION['id']) and $phase == 2) {
+            $checkwish = $freeBorrowRepository->checkFreeBorrow($_SESSION['id'], $game->id);
         }
         require('View/game.php');
     }

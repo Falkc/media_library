@@ -51,20 +51,28 @@
                         </a>
                     </div>
                 </div>
-                <?php } else if ($checkwish == 1) {
-                if ($phase == 1) { ?>
+                <?php } else if ($phase == 1) {
+                if ($checkwish == 1) { ?>
                     <div class=" col-md-3 d-flex justify-content-center align-items-center">
                         <a href='<?= SITE ?>/deletewishesandredirect/<?= $game->slug ?>/0'> <button type="button" class="btn btn-lg btn-primary">Supprimer de mes voeux</button></a>
                     </div>
-                <?php }
-            } else {
-                if ($phase == 1) { ?>
+                <?php } else { ?>
                     <div class="col-md-3 d-flex justify-content-center align-items-center">
                         <a href='<?= SITE ?>/addwishes/<?= $game->slug ?>'> <button type="button" class="btn btn-lg btn-primary">Ajouter à mes voeux</button></a>
                     </div>
+                <?php }
+            } else {
+                if ($checkwish == 1) { ?>
+                    <div class=" col-md-3 d-flex justify-content-center align-items-center">
+                        <a href='<?= SITE ?>/deleteFreeBorrowAndRedirect/<?= $game->slug ?>/0'> <button type="button" class="btn btn-lg btn-primary">Retirer la demande</button></a>
+                    </div>
+                <?php } else { ?>
+                    <div class="col-md-3 d-flex justify-content-center align-items-center">
+                        <a href='<?= SITE ?>/addWishFreeBorrow/<?= $game->slug ?>'> <button type="button" class="btn btn-lg btn-primary">Demander le jeu</button></a>
+                    </div>
             <?php }
-            }
-            ?>
+            } ?>
+
         </div>
     </div>
 

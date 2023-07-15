@@ -101,7 +101,7 @@ class CategoryRepository
         ]);
     }
 
-    public function getGameCategoryById(string $id): Category
+    public function getGameCategoryById($id): Category
     {
         $statement = $this->connection->getConnection()->prepare(
             "SELECT category_id FROM category_game WHERE game_id=?"
@@ -114,7 +114,7 @@ class CategoryRepository
         );
         $statement->execute([$categoryId]);
         $row = $statement->fetch();
-        
+
         $category = new Category();
         $category->id = $row['id'];
         $category->name = $row['name'];
