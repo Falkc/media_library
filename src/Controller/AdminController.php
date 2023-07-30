@@ -8,10 +8,11 @@ use App\Model\Entity\Wish;
 use App\Model\Entity\Idtable;
 use App\Model\GameRepository;
 use App\Model\UserRepository;
+use App\Model\Entity\Category;
 use App\Lib\DatabaseConnection;
 use App\Model\WishesRepository;
+use App\Model\HistoryRepository;
 use App\Model\CategoryRepository;
-use App\Model\Entity\Category;
 use App\Model\InformationRepository;
 
 class AdminController
@@ -538,5 +539,29 @@ class AdminController
         $informationRepository = new InformationRepository();
         $database = new DatabaseConnection();
         $informationRepository->connection = $database;
+    }
+    public function showHistory()
+    {
+        $informationRepository = new InformationRepository();
+        $historyRepository = new HistoryRepository();
+        $database = new DatabaseConnection();
+        $informationRepository->connection = $database;
+        $historyRepository->connection = $database;
+
+        $phase = $informationRepository->getPhase();
+        $date = new DateTime($informationRepository->getDeadLine());
+
+        $dates = $historyRepository->getDates();
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $date_string = new DateTime($_POST['date']);
+            $history = $historyRepository->getHistory($date_string);
+        } else {
+            if (isset($dates[0])) {
+                $history = $historyRepository->getHistory($dates[0]);
+            } else {
+                $errorMsg = "Aucune attribution n'a encore été faite";
+            }
+        }
+        require('View/admin/history.php');
     }
 }
