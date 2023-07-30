@@ -322,9 +322,6 @@ class AdminController
                     $i++;
                 }
             }
-            for ($i = $gamenb; $i > 0; $i--) {
-                $gamequantity[$i] = $gamequantity[$i - 1];
-            }
             // gestion des contraintes
             $constraints = [];
             if (isset($_SESSION['constraintTable'])) {

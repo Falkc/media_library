@@ -31,6 +31,9 @@
                         <li class="nav-item">
                           <a class="nav-link" href="<?= SITE ?>/admin/members/show">Voir les membres</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?= SITE ?>/admin/showHistory">Historique</a>
+                        </li>
                         <?php if (isset($date)) { ?>
                             <li class="nav-item">
                                 <a class="nav-link" href="<?= SITE ?>/admin/updateDeadLine"><?= $date->format('Y-m-d') ?></a>
@@ -46,7 +49,7 @@
 
         <nav class="navbar navbar-expand-lg navbar-dark bg-danger">
             <div class="container-fluid">
-                <a class="navbar-brand" href="<?= SITE ?>">Médiathèque</a>
+                <a class="navbar-brand" href="<?= SITE ?>">Ludocrèche</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -60,6 +63,9 @@
                         </li>
                         <li class="nav-item">
                           <a class="nav-link" href="<?= SITE ?>/admin/members/show">Voir les membres</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?= SITE ?>/admin/showHistory">Historique</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="<?= SITE ?>/admin/passToPhase1">Passer à la phase de voeux</a>

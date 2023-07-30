@@ -273,4 +273,11 @@ class WishesRepository
         $nbWishes = $statement->fetch()['nb'];
         return $nbWishes;
     }
+
+    public function deleteAllFromWishes()
+    {
+        $statement = $this->connection->getConnection()->query(
+            'TRUNCATE TABLE wishes'
+        );
+    }
 }
