@@ -7,6 +7,7 @@ use App\Model\GameRepository;
 use App\Lib\DatabaseConnection;
 use App\Model\WishesRepository;
 use App\Model\CategoryRepository;
+use App\Model\FreeBorrowRepository;
 use App\Model\InformationRepository;
 
 class WishesController
@@ -138,5 +139,109 @@ class WishesController
             var_dump($wishNb);
             return 2;
         }
+    }
+
+    public function addWishFreeBorrow()
+    {
+
+        $informationRepository = new InformationRepository();
+        $gameRepository = new GameRepository();
+        $freeBorrowRepository = new FreeBorrowRepository();
+        $wishesRepository = new WishesRepository();
+        $database = new DatabaseConnection();
+        $informationRepository->connection = $database;
+        $wishesRepository->connection = $database;
+        $gameRepository->connection = $database;
+        $freeBorrowRepository->connection = $database;
+
+        $phase = managePhase(2);
+        $date = new DateTime($informationRepository->getDeadLine());
+
+        $game_slug = $_GET['game_slug'];
+        $check = $this->checkFreeBorrowAdding($game_slug);
+        if ($check == true) {
+            $game = $gameRepository->getGameBySlug($game_slug);
+            $freeBorrowRepository->addFreeBorrowToDataBase($_SESSION['id'], $game->id);
+            header("Location:" . SITE . "/game/" . $_GET['game_slug']);
+        } else {
+            header("Location:" . SITE);
+        }
+    }
+
+    private function checkFreeBorrowAdding($game_slug)
+    {
+        $freeBorrowRepository = new FreeBorrowRepository();
+        $database = new DatabaseConnection();
+
+        $freeBorrowRepository->connection = $database;
+
+        $check = $freeBorrowRepository->checkFreeBorrowAddingBySlug($game_slug);
+        if ($check > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function deleteFreeBorrowAndRedirect()
+    {
+        $phase = managePhase(2);
+        $game = $this->deleteFreeBorrow($_GET['game_slug']);
+        $redirect = $_GET['redirect'];
+        if ($redirect == 0) {
+            header("Location:" . SITE . "/game/" . $game->slug);
+        }
+        if ($redirect == 1) {
+            header("Location:" . SITE . "/showFreeBorrowDemands/");
+        }
+    }
+
+    private function deleteFreeBorrow($game_slug)
+    {
+        $phase = managePhase(2);
+
+        $freeBorrowRepository = new FreeBorrowRepository();
+        $gameRepository = new GameRepository();
+        $informationRepository = new InformationRepository();
+        $database = new DatabaseConnection();
+
+        $informationRepository->connection = $database;
+        $gameRepository->connection = $database;
+        $freeBorrowRepository->connection = $database;
+
+        $date = new DateTime($informationRepository->getDeadLine());
+        $game = $gameRepository->getGameBySlug($game_slug);
+        $freeBorrowRepository->deleteFreeBorrow($_SESSION['id'], $game->id);
+        return $game;
+    }
+
+    public function showFreeBorrowDemands()
+    {
+        $phase = managePhase(2);
+
+        $categoryRepository = new CategoryRepository();
+        $freeBorrowRepository = new FreeBorrowRepository();
+        $gameRepository = new GameRepository();
+        $informationRepository = new InformationRepository();
+        $database = new DatabaseConnection();
+
+        $informationRepository->connection = $database;
+        $gameRepository->connection = $database;
+        $freeBorrowRepository->connection = $database;
+        $categoryRepository->connection = $database;
+        $date = new DateTime($informationRepository->getDeadLine());
+
+        $games = $freeBorrowRepository->getFreeBorrowDemands();
+
+        foreach ($games as $game) {
+            $game->category = $categoryRepository->getGameCategoryById($game->id);
+        }
+
+
+        if (empty($games)) {
+            $errorMsg = 'Vous n\'avez pas encore fait de demande d\'emprunt libre !';
+        }
+
+        require('View/freeBorrowDemands.php');
     }
 }

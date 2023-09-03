@@ -23,6 +23,11 @@ RewriteRule ^admin/cancelAttribution/?$ index.php?p=admin/cancelAttribution
 RewriteRule ^admin/acceptAttribution/?$ index.php?p=admin/acceptAttribution
 RewriteRule ^admin/attribution?$ index.php?p=admin/attribution
 RewriteRule ^admin/showHistory/?$ index.php?p=admin/showHistory
+RewriteRule ^addWishFreeBorrow(/(.*))?$ index.php?p=wishes/addWishFreeBorrow&game_slug=$2
+RewriteRule ^deleteFreeBorrowAndRedirect(/([^/]*))?(/(.*))?$ index.php?p=wishes/deleteFreeBorrowAndRedirect&game_slug=$2&redirect=$4
+RewriteRule ^showFreeBorrowDemands/?$ index.php?p=wishes/showFreeBorrowDemands
+RewriteRule ^admin/showAllBorrowDemands/?$ index.php?p=admin/showAllBorrowDemands
+
 # RewriteRule ^(.+)$ index.php?p=$1
 # ^ début expression régulière, $ fin , $1 récupère la première expression en parenthèse
 # /catégorie page de base, /catégorie/nomcatégorie page spécifique

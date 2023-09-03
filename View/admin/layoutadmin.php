@@ -62,6 +62,9 @@
                             <a class="nav-link" href="<?= SITE ?>/admin/game/add/">Ajouter un jeu</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link" href="<?= SITE ?>/admin/showAllBorrowDemands/">Demandes d'emprunts libres</a>
+                        </li>
+                        <li class="nav-item">
                           <a class="nav-link" href="<?= SITE ?>/admin/members/show">Voir les membres</a>
                         </li>
                         <li class="nav-item">

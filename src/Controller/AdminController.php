@@ -13,6 +13,7 @@ use App\Lib\DatabaseConnection;
 use App\Model\WishesRepository;
 use App\Model\HistoryRepository;
 use App\Model\CategoryRepository;
+use App\Model\FreeBorrowRepository;
 use App\Model\InformationRepository;
 
 class AdminController
@@ -375,9 +376,25 @@ class AdminController
             header("Location: " . SITE);
         } else {
             $phase = managePhase(1);
+            $wishesRepository = new WishesRepository();
             $informationRepository = new InformationRepository();
+            $historyRepository = new HistoryRepository();
             $database = new DatabaseConnection();
             $informationRepository->connection = $database;
+            $wishesRepository->connection = $database;
+            $historyRepository->connection = $database;
+
+            $nb_copies_updated = $this->updateNbCopiesLeft();
+            var_dump($nb_copies_updated);
+            $wishesRepository->updateNbCopiesLeft($nb_copies_updated);
+
+            $historyRepository->addToHistory();
+            $wishesRepository->deleteAllFromWishes();
+
+            if (isset($_SESSION['constraintTable'])) {
+                unset($_SESSION['constraintTable']);
+                unset($_SESSION['nbConstraint']);
+            }
 
             $informationRepository->modifyPhase(2);
             $informationRepository->modifyAttribution(1);
@@ -394,15 +411,17 @@ class AdminController
             $now = new DateTime('now');
             if (isset($_POST['date'])) {
                 $informationRepository = new InformationRepository();
+                $freeBorrowRepository = new FreeBorrowRepository();
                 $database = new DatabaseConnection();
                 $informationRepository->connection = $database;
+                $freeBorrowRepository->connection = $database;
 
                 $date = new DateTime($_POST['date']);
                 if ($date > $now && $date->format('Y-m-d') != $now->format('Y-m-d')) {
                     $informationRepository->modifyDate($date);
                     $informationRepository->modifyPhase(1);
+                    $freeBorrowRepository->resetFreeBorrowTable();
                     $successMsg = 'Vous venez de passer à la phase de voeux.';
-                    $phase=1;
                 } else {
                     $errorMsg = 'Vous devez sélectionner une date correcte.';
                 }
@@ -534,12 +553,7 @@ class AdminController
             require('View/admin/updateDeadLine.php');
         }
     }
-    private function checkWishAdding()
-    {
-        $informationRepository = new InformationRepository();
-        $database = new DatabaseConnection();
-        $informationRepository->connection = $database;
-    }
+    
     public function showHistory()
     {
         $informationRepository = new InformationRepository();
@@ -563,5 +577,99 @@ class AdminController
             }
         }
         require('View/admin/history.php');
+    }
+
+    private function updateNbCopiesLeft()
+    {
+        if ($_SESSION['admin'] != 1) {
+            header("Location: " . SITE);
+        } else {
+            $phase = managePhase(1);
+            $wishesRepository = new WishesRepository();
+            $informationRepository = new InformationRepository();
+            $historyRepository = new HistoryRepository();
+            $database = new DatabaseConnection();
+            $informationRepository->connection = $database;
+            $wishesRepository->connection = $database;
+            $historyRepository->connection = $database;
+
+            $attributed = $wishesRepository->getNbCopiesAttributed();
+            $nb_copies = $wishesRepository->getNbCopies();
+
+
+            $nb_copies_updated = [];
+            foreach ($nb_copies as $i => $nb_copies) {
+                // echo "<br>" . "nb_copies" . "<br>";
+                // var_dump($nb_copies);
+                foreach ($attributed as $attr) {
+                    // echo "<br>" . "attributed" . "<br>";
+                    // var_dump($attr);
+                    if (intval($nb_copies['id']) == intval($attr['id'])) {
+                        $games['id'] = intval($nb_copies['id']);
+                        $games['nbCopies'] = intval($nb_copies['nbCopies']) - intval($attr['nbAttributed']);
+                        $nb_copies_updated[$i] = $games;
+                        // echo "<br>" . "nb_copies_updated" . "<br>";
+                        // var_dump($nb_copies_updated);
+                        break;
+                    } else {
+                        $games['id'] = intval($nb_copies['id']);
+                        $games['nbCopies'] = intval($nb_copies['nbCopies']);
+                        $nb_copies_updated[$i] = $games;
+                    }
+                }
+            }
+            return $nb_copies_updated;
+        }
+    }
+
+    public function showAllBorrowDemands()
+    {
+
+        if ($_SESSION['admin'] != 1) {
+            header("Location: " . SITE);
+        } else {
+            $phase = managePhase(2);
+            $freeBorrowRepository = new FreeBorrowRepository();
+            $database = new DatabaseConnection();
+            $freeBorrowRepository->connection = $database;
+
+            if ($_SERVER['REQUEST_METHOD'] == 'POST' and isset($_POST['state'])) {
+                $this->changeFreeBorrowState($_POST['state'], intval($_POST['user_id']), intval($_POST['game_id']), $_POST['previous_state']);
+            }
+
+            $fbdAndUser = $freeBorrowRepository->getFBDAndUser();
+            require('View/admin/showAllBorrowDemands.php');
+        }
+    }
+
+    private function changeFreeBorrowState($state, $user_id, $game_id, $previous_state)
+    {
+        if ($_SESSION['admin'] != 1) {
+            header("Location: " . SITE);
+        } else {
+            $phase = managePhase(2);
+
+            $freeBorrowRepository = new FreeBorrowRepository();
+            $database = new DatabaseConnection();
+            $freeBorrowRepository->connection = $database;
+
+            if ($state == "En attente") {
+                $value = 0;
+                $freeBorrowRepository->changeFreeBorrowState($value, $game_id, $user_id);
+            } else if ($state == "Refusée") {
+                $value = -1;
+                if ($previous_state == "Acceptée") {
+                    $freeBorrowRepository->addNbCopies($game_id);
+                }
+                $freeBorrowRepository->changeFreeBorrowState($value, $game_id, $user_id);
+            } else if ($state == "Acceptée") {
+                $value = 1;
+                $check = $freeBorrowRepository->checkFreeBorrowAccepting($game_id);
+                if ($check == 1) {
+                    $freeBorrowRepository->decreaseNbCopies($game_id);
+                    $freeBorrowRepository->changeFreeBorrowState($value, $game_id, $user_id);
+                }
+            }
+        }
     }
 }

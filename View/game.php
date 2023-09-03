@@ -16,7 +16,7 @@
         <?php } ?>
         <div class="row">
             <div class="col-md-3">
-                <img src="<?= URL . "Images/" . $game->image ?>" class=" card-img-top flex-shrink-0" alt="<?= $game->name ?>">
+                <img src="<?= URL . "Images/" . $game->image ?>" class=" card-img-top flex-shrink-0" alt="<?= "Images/" . $game->image ?>">
             </div>
             <div class="col-md-6">
                 <h1> <?= $game->name ?> </h1>
@@ -27,8 +27,6 @@
                         </span>
                     </a>
                 </p>
-                <h5>Nombre d'exemplaires :</h5>
-                <p> <?= $game->nb_copies ?> </p>
                 <h5>Description du jeu :</h5>
                 <p> <?= $game->description ?> </p>
             </div>
@@ -53,20 +51,28 @@
                         </a>
                     </div>
                 </div>
-                <?php } else if ($checkwish == 1) {
-                if ($phase == 1) { ?>
+                <?php } else if ($phase == 1) {
+                if ($checkwish == 1) { ?>
                     <div class=" col-md-3 d-flex justify-content-center align-items-center">
                         <a href='<?= SITE ?>/deletewishesandredirect/<?= $game->slug ?>/0'> <button type="button" class="btn btn-lg btn-primary">Supprimer de mes voeux</button></a>
                     </div>
-                <?php }
-            } else {
-                if ($phase == 1) { ?>
+                <?php } else { ?>
                     <div class="col-md-3 d-flex justify-content-center align-items-center">
                         <a href='<?= SITE ?>/addwishes/<?= $game->slug ?>'> <button type="button" class="btn btn-lg btn-primary">Ajouter à mes voeux</button></a>
                     </div>
+                <?php }
+            } else {
+                if ($checkwish == 1) { ?>
+                    <div class=" col-md-3 d-flex justify-content-center align-items-center">
+                        <a href='<?= SITE ?>/deleteFreeBorrowAndRedirect/<?= $game->slug ?>/0'> <button type="button" class="btn btn-lg btn-primary">Retirer la demande</button></a>
+                    </div>
+                <?php } else { ?>
+                    <div class="col-md-3 d-flex justify-content-center align-items-center">
+                        <a href='<?= SITE ?>/addWishFreeBorrow/<?= $game->slug ?>'> <button type="button" class="btn btn-lg btn-primary">Demander le jeu</button></a>
+                    </div>
             <?php }
-            }
-            ?>
+            } ?>
+
         </div>
     </div>
 
